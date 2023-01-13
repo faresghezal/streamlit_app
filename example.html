@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 700px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Horv\u00e1th Ill\u00e9s", "label": "Horv\u00e1th Ill\u00e9s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Tak\u00e1cs B\u00e1lint M\u00e1t\u00e9", "label": "Tak\u00e1cs B\u00e1lint M\u00e1t\u00e9", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Molontay Roland", "label": "Molontay Roland", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Vet\u0151 B\u00e1lint", "label": "Vet\u0151 B\u00e1lint", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "label": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Horv\u00e1th R\u00f3bert", "label": "Horv\u00e1th R\u00f3bert", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kov\u00e1cs Edith Alice", "label": "Kov\u00e1cs Edith Alice", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "F\u00fcl\u00f6p Ot\u00edlia", "label": "F\u00fcl\u00f6p Ot\u00edlia", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kar\u00e1tson J\u00e1nos", "label": "Kar\u00e1tson J\u00e1nos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kov\u00e1cs Mih\u00e1ly", "label": "Kov\u00e1cs Mih\u00e1ly", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Mincsovics Mikl\u00f3s", "label": "Mincsovics Mikl\u00f3s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "L\u00f3czi Lajos", "label": "L\u00f3czi Lajos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Sz\u00e1ntai Tam\u00e1s", "label": "Sz\u00e1ntai Tam\u00e1s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hujter Mih\u00e1ly", "label": "Hujter Mih\u00e1ly", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Borb\u00e9ly G\u00e1bor", "label": "Borb\u00e9ly G\u00e1bor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kornai Andr\u00e1s", "label": "Kornai Andr\u00e1s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ko\u00f3s Kriszti\u00e1nn\u00e9 Szil\u00e1gyi Brigitta", "label": "Ko\u00f3s Kriszti\u00e1nn\u00e9 Szil\u00e1gyi Brigitta", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Moln\u00e1r Emil", "label": "Moln\u00e1r Emil", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Lovas Attila", "label": "Lovas Attila", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "G. Horv\u00e1th \u00c1kos", "label": "G. Horv\u00e1th \u00c1kos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Prok Istv\u00e1n", "label": "Prok Istv\u00e1n", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Szirmai Jen\u0151", "label": "Szirmai Jen\u0151", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nagy B\u00e9la", "label": "Nagy B\u00e9la", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nagyn\u00e9 Szilv\u00e1si M\u00e1rta", "label": "Nagyn\u00e9 Szilv\u00e1si M\u00e1rta", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Matolcsi M\u00e1t\u00e9", "label": "Matolcsi M\u00e1t\u00e9", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Balla-Seethalern\u00e9 B\u00e9la Szilvia", "label": "Balla-Seethalern\u00e9 B\u00e9la Szilvia", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Halmschlager Andrea", "label": "Halmschlager Andrea", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Weiner Mih\u00e1ly", "label": "Weiner Mih\u00e1ly", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Bodrogn\u00e9 R\u00e9ffy J\u00falia Anna", "label": "Bodrogn\u00e9 R\u00e9ffy J\u00falia Anna", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Tasn\u00e1di Tam\u00e1s P\u00e9ter", "label": "Tasn\u00e1di Tam\u00e1s P\u00e9ter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ferenczi Mikl\u00f3s", "label": "Ferenczi Mikl\u00f3s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ser\u00e9ny Gy\u00f6rgy", "label": "Ser\u00e9ny Gy\u00f6rgy", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "S\u00e1gi G\u00e1bor", "label": "S\u00e1gi G\u00e1bor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "L\u00e1ngi Zsolt", "label": "L\u00e1ngi Zsolt", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "R\u00e1th Bal\u00e1zs", "label": "R\u00e1th Bal\u00e1zs", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "R\u00f3nyai Lajos", "label": "R\u00f3nyai Lajos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nagy Attila", "label": "Nagy Attila", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kiss S\u00e1ndor", "label": "Kiss S\u00e1ndor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Wettl Ferenc", "label": "Wettl Ferenc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Babcs\u00e1nyi Istv\u00e1n", "label": "Babcs\u00e1nyi Istv\u00e1n", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Csima G\u00e9za", "label": "Csima G\u00e9za", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "L\u00e1ngn\u00e9 L\u00e1zi M\u00e1rta", "label": "L\u00e1ngn\u00e9 L\u00e1zi M\u00e1rta", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Moln\u00e1r Zolt\u00e1n G\u00e1bor", "label": "Moln\u00e1r Zolt\u00e1n G\u00e1bor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nagy Ilona", "label": "Nagy Ilona", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kiss Krisztina", "label": "Kiss Krisztina", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Gyurkovics \u00c9va", "label": "Gyurkovics \u00c9va", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kov\u00e1cs S\u00e1ndor", "label": "Kov\u00e1cs S\u00e1ndor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "H\u00e9thelyi L\u00e1szl\u00f3", "label": "H\u00e9thelyi L\u00e1szl\u00f3", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Horv\u00e1th Erzs\u00e9bet", "label": "Horv\u00e1th Erzs\u00e9bet", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Sz\u0171cs Zsolt", "label": "Sz\u0171cs Zsolt", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Tak\u00e1cs Bal\u00e1zs", "label": "Tak\u00e1cs Bal\u00e1zs", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Mosonyi Mil\u00e1n", "label": "Mosonyi Mil\u00e1n", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Moln\u00e1r Lajos G\u00e1bor", "label": "Moln\u00e1r Lajos G\u00e1bor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Pitrik J\u00f3zsef", "label": "Pitrik J\u00f3zsef", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Andai Attila", "label": "Andai Attila", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Etesi G\u00e1bor", "label": "Etesi G\u00e1bor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Szab\u00f3 Szil\u00e1rd", "label": "Szab\u00f3 Szil\u00e1rd", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Farkas L\u00f3r\u00e1nt Ern\u0151", "label": "Farkas L\u00f3r\u00e1nt Ern\u0151", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "K\u00f3i Tam\u00e1s", "label": "K\u00f3i Tam\u00e1s", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "Horv\u00e1th Ill\u00e9s", "qScore": 0.9533, "to": "Tak\u00e1cs B\u00e1lint M\u00e1t\u00e9", "width": 1}, {"from": "Horv\u00e1th Ill\u00e9s", "qScore": 0.2467, "to": "Molontay Roland", "width": 1}, {"from": "Horv\u00e1th Ill\u00e9s", "qScore": 0.9293, "to": "Vet\u0151 B\u00e1lint", "width": 1}, {"from": "Tak\u00e1cs B\u00e1lint M\u00e1t\u00e9", "qScore": 4.026, "to": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "width": 1}, {"from": "Tak\u00e1cs B\u00e1lint M\u00e1t\u00e9", "qScore": 3.946, "to": "Horv\u00e1th R\u00f3bert", "width": 1}, {"from": "Molontay Roland", "qScore": 2.327, "to": "Kov\u00e1cs Edith Alice", "width": 1}, {"from": "Molontay Roland", "qScore": 3.337, "to": "F\u00fcl\u00f6p Ot\u00edlia", "width": 1}, {"from": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "qScore": 22.32, "to": "Horv\u00e1th R\u00f3bert", "width": 1}, {"from": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "qScore": 11.37, "to": "Kar\u00e1tson J\u00e1nos", "width": 1}, {"from": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "qScore": 1.2, "to": "Kov\u00e1cs Mih\u00e1ly", "width": 1}, {"from": "Farag\u00f3 Istv\u00e1n Gy\u00f6rgy", "qScore": 1.107, "to": "Mincsovics Mikl\u00f3s", "width": 1}, {"from": "Horv\u00e1th R\u00f3bert", "qScore": 2.415, "to": "Kar\u00e1tson J\u00e1nos", "width": 1}, {"from": "Horv\u00e1th R\u00f3bert", "qScore": 0.08, "to": "Mincsovics Mikl\u00f3s", "width": 1}, {"from": "Kar\u00e1tson J\u00e1nos", "qScore": 0.6, "to": "L\u00f3czi Lajos", "width": 1}, {"from": "Kov\u00e1cs Edith Alice", "qScore": 5.707, "to": "Sz\u00e1ntai Tam\u00e1s", "width": 1}, {"from": "Sz\u00e1ntai Tam\u00e1s", "qScore": 0.0, "to": "Hujter Mih\u00e1ly", "width": 1}, {"from": "Borb\u00e9ly G\u00e1bor", "qScore": 0.5, "to": "Kornai Andr\u00e1s", "width": 1}, {"from": "Borb\u00e9ly G\u00e1bor", "qScore": 0.2667, "to": "Ko\u00f3s Kriszti\u00e1nn\u00e9 Szil\u00e1gyi Brigitta", "width": 1}, {"from": "Ko\u00f3s Kriszti\u00e1nn\u00e9 Szil\u00e1gyi Brigitta", "qScore": 0.6, "to": "Moln\u00e1r Emil", "width": 1}, {"from": "Ko\u00f3s Kriszti\u00e1nn\u00e9 Szil\u00e1gyi Brigitta", "qScore": 2.038, "to": "Lovas Attila", "width": 1}, {"from": "Moln\u00e1r Emil", "qScore": 0.3, "to": "G. Horv\u00e1th \u00c1kos", "width": 1}, {"from": "Moln\u00e1r Emil", "qScore": 5.965, "to": "Prok Istv\u00e1n", "width": 1}, {"from": "Moln\u00e1r Emil", "qScore": 11.54, "to": "Szirmai Jen\u0151", "width": 1}, {"from": "Nagy B\u00e9la", "qScore": 3.317, "to": "Nagyn\u00e9 Szilv\u00e1si M\u00e1rta", "width": 1}, {"from": "Nagy B\u00e9la", "qScore": 5.669, "to": "Matolcsi M\u00e1t\u00e9", "width": 1}, {"from": "Nagyn\u00e9 Szilv\u00e1si M\u00e1rta", "qScore": 2.149, "to": "Matolcsi M\u00e1t\u00e9", "width": 1}, {"from": "Nagyn\u00e9 Szilv\u00e1si M\u00e1rta", "qScore": 2.467, "to": "Balla-Seethalern\u00e9 B\u00e9la Szilvia", "width": 1}, {"from": "Matolcsi M\u00e1t\u00e9", "qScore": 0.661, "to": "Halmschlager Andrea", "width": 1}, {"from": "Matolcsi M\u00e1t\u00e9", "qScore": 4.891, "to": "Weiner Mih\u00e1ly", "width": 1}, {"from": "Matolcsi M\u00e1t\u00e9", "qScore": 0.7727, "to": "Bodrogn\u00e9 R\u00e9ffy J\u00falia Anna", "width": 1}, {"from": "Matolcsi M\u00e1t\u00e9", "qScore": 0.97, "to": "Tasn\u00e1di Tam\u00e1s P\u00e9ter", "width": 1}, {"from": "Ferenczi Mikl\u00f3s", "qScore": 0.0, "to": "Ser\u00e9ny Gy\u00f6rgy", "width": 1}, {"from": "Ferenczi Mikl\u00f3s", "qScore": 0.6, "to": "S\u00e1gi G\u00e1bor", "width": 1}, {"from": "Hujter Mih\u00e1ly", "qScore": 0.787, "to": "L\u00e1ngi Zsolt", "width": 1}, {"from": "R\u00e1th Bal\u00e1zs", "qScore": 0.4273, "to": "R\u00f3nyai Lajos", "width": 1}, {"from": "R\u00f3nyai Lajos", "qScore": 0.4, "to": "Nagy Attila", "width": 1}, {"from": "R\u00f3nyai Lajos", "qScore": 2.133, "to": "Kiss S\u00e1ndor", "width": 1}, {"from": "Nagy Attila", "qScore": 0.2, "to": "Wettl Ferenc", "width": 1}, {"from": "Nagy Attila", "qScore": 3.6, "to": "Babcs\u00e1nyi Istv\u00e1n", "width": 1}, {"from": "G. Horv\u00e1th \u00c1kos", "qScore": 0.8, "to": "Prok Istv\u00e1n", "width": 1}, {"from": "G. Horv\u00e1th \u00c1kos", "qScore": 2.609, "to": "L\u00e1ngi Zsolt", "width": 1}, {"from": "Prok Istv\u00e1n", "qScore": 6.429, "to": "Szirmai Jen\u0151", "width": 1}, {"from": "Szirmai Jen\u0151", "qScore": 4.653, "to": "Csima G\u00e9za", "width": 1}, {"from": "L\u00e1ngn\u00e9 L\u00e1zi M\u00e1rta", "qScore": 0.0, "to": "Kiss S\u00e1ndor", "width": 1}, {"from": "L\u00e1ngn\u00e9 L\u00e1zi M\u00e1rta", "qScore": 0.0, "to": "Moln\u00e1r Zolt\u00e1n G\u00e1bor", "width": 1}, {"from": "L\u00e1ngn\u00e9 L\u00e1zi M\u00e1rta", "qScore": 0.0, "to": "Nagy Ilona", "width": 1}, {"from": "Kiss S\u00e1ndor", "qScore": 0.0, "to": "Moln\u00e1r Zolt\u00e1n G\u00e1bor", "width": 1}, {"from": "Kiss S\u00e1ndor", "qScore": 0.0, "to": "Nagy Ilona", "width": 1}, {"from": "Moln\u00e1r Zolt\u00e1n G\u00e1bor", "qScore": 0.2, "to": "Nagy Ilona", "width": 1}, {"from": "Nagy Ilona", "qScore": 1.788, "to": "Kiss Krisztina", "width": 1}, {"from": "Nagy Ilona", "qScore": 1.788, "to": "Gyurkovics \u00c9va", "width": 1}, {"from": "Kiss Krisztina", "qScore": 9.812, "to": "Gyurkovics \u00c9va", "width": 1}, {"from": "Kiss Krisztina", "qScore": 2.548, "to": "Kov\u00e1cs S\u00e1ndor", "width": 1}, {"from": "H\u00e9thelyi L\u00e1szl\u00f3", "qScore": 4.907, "to": "Horv\u00e1th Erzs\u00e9bet", "width": 1}, {"from": "Wettl Ferenc", "qScore": 0.2, "to": "Babcs\u00e1nyi Istv\u00e1n", "width": 1}, {"from": "Sz\u0171cs Zsolt", "qScore": 1.514, "to": "Tak\u00e1cs Bal\u00e1zs", "width": 1}, {"from": "Weiner Mih\u00e1ly", "qScore": 1.985, "to": "Mosonyi Mil\u00e1n", "width": 1}, {"from": "Moln\u00e1r Lajos G\u00e1bor", "qScore": 0.6487, "to": "Pitrik J\u00f3zsef", "width": 1}, {"from": "Andai Attila", "qScore": 4.121, "to": "Lovas Attila", "width": 1}, {"from": "Etesi G\u00e1bor", "qScore": 1.941, "to": "Szab\u00f3 Szil\u00e1rd", "width": 1}, {"from": "Farkas L\u00f3r\u00e1nt Ern\u0151", "qScore": 9.071, "to": "K\u00f3i Tam\u00e1s", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
