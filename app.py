@@ -5,7 +5,8 @@ import streamlit.components.v1 as components
 from IPython.core.display import display, HTML
 import pandas as pd
 from streamlit_option_menu import option_menu 
-
+import plotly.express as px
+import plotly.graph_objects as go
 def page1():
   max_year=2023
   figSize = (13,5)
@@ -21,19 +22,20 @@ def page1():
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
   pubs=pd.read_csv("mtmt-faculty-yearly.csv")
   pubs = pubs.reset_index()
-  df = pubs.groupby("Év").agg({"Konferenciacikkek száma": "sum", "Könyv és könyvfejezet": "sum", "Lektorált folyóiratok száma": "sum", "Szabadalom": "sum"})
-  fig=df.loc[:max_year-1].plot.bar(stacked=True, figsize=figSize, ylabel="Adott kategóriájú publikációk száma")
-  col1.pyplot(fig.figure)
-  df = pubs.groupby("Év").agg({"D1": "sum", "Q1": "sum", "Q2": "sum", "Q3": "sum", "Q4": "sum"})
-  fig=df.loc[max_year-10:max_year-1].plot.bar(stacked=True, figsize=figSize, ylabel="Adott rangú folyóiratcikkek száma")
-  col2.pyplot(fig.figure)
-  df = pubs.groupby("Év").agg({"I pontszám": "sum"})
+  fig = px.bar(pubs, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  col1.plotly_chart(fig, use_container_width=True)
+  fig=px.bar(pubs, x="Év", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
-  fig=df.loc[:max_year-1].plot.bar(stacked=True, figsize=figSize, ylabel="citations").get_legend().remove()
-  col3.pyplot(fig)
-  df = pubs.groupby("Év").agg({"IF": "sum", "Normalizált IF": "sum", "IF folyóiratok száma": "sum"})
-  fig=df.loc[:max_year-1].plot.bar(stacked=False, figsize=figSize)
-  col4.pyplot(fig.figure)
+  fig=px.bar(pubs, x="Év", y=["I pontszám"])
+  col3.plotly_chart(fig, use_container_width=True)
+  fig = go.Figure(data=[
+    go.Bar(name='IF', x=pubs["Év"], y=pubs["IF"]),
+    go.Bar(name='Normalizált IF', x=pubs["Év"], y=pubs["Normalizált IF"]),
+    go.Bar(name='IF folyóiratok száma', x=pubs["Év"], y= pubs["IF folyóiratok száma"])
+  ])
+  fig.update_layout(barmode='group')
+  col4.plotly_chart(fig, use_container_width=True)
 
 def page3():
   col1, col2 = st.columns(2)
