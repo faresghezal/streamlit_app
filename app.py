@@ -1,12 +1,13 @@
 import streamlit as st
 import networkx as nx
-from pyvis import network as net
+from pyvis.network import Network
 import streamlit.components.v1 as components
 from IPython.core.display import display, HTML
 import pandas as pd
 from streamlit_option_menu import option_menu 
 import plotly.express as px
 import plotly.graph_objects as go
+from networkx.algorithms.community import greedy_modularity_communities
 def page1():
   max_year=2023
   figSize = (13,5)
@@ -40,6 +41,7 @@ def page1():
 def page3():
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
+  col5, col6 = st.columns(2)
   hide_table_row_index = """
             <style>
             thead tr th:first-child {display:none}
@@ -49,30 +51,41 @@ def page3():
 
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
   col1.subheader("Authors with top impact ")
-  col2.subheader("The most cited authors")
-  col3.subheader("Most influential publications")
-  col4.subheader("Researchers with top H index")
+  col2.subheader("publications with top impact ")
+
+  col3.subheader("The most cited authors")
+  col4.subheader("The most cited publications")
+
+
+  col5.subheader("Most influential publications")
+  col6.subheader("Researchers with top H index")
+
+
+  
   col1.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
-  col2.write("Based on the number of citations according to Google Scholar, the most cited authors of the faculty are as follows (one author is counted only once).")
-  col3.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
-  col4.write("The list of the researchers having the highest H index are as follows.")
+  col2.write("publications with top impact factor The publications of the faculty having the highest impact factor are as follows.")
+
+  col3.write("Based on the number of citations according to Google Scholar, the most cited authors of the faculty are as follows (one author is counted only once).")
+  col4.write("Based on the number of citations according to Google Scholar, the most cited publications of the faculty are as follows (one author is counted only once).")
+
+  col5.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
+  col6.write("The list of the researchers having the highest H index are as follows.")
   people=pd.read_csv('people_flt.csv')
   scores=pd.read_csv('node_person.csv')
   df=pd.read_csv('percentille.csv')
+  pubs=df[df["1.00%"]>0]
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
   scores["link"] = "https://m2.mtmt.hu/gui2/?type=authors&mode=browse&sel="+ scores["MTMT"].apply(str) +"&view=simpleList"
   list1=scores.sort_values(by=["ifScore"],ascending=False)
-  list2=scores.sort_values(by=["citations"],ascending=False)
-  list4=scores.sort_values(by=["hIndex"],ascending=False)
+  list3=scores.sort_values(by=["citations"],ascending=False)
+  df.rename(columns={"idézettség": "citations"}, inplace=True)
+  list4=df.sort_values(by=["citations"],ascending=False)
+  list6=scores.sort_values(by=["hIndex"],ascending=False)
   col1.table(list1[[ "Név", "link","ifScore"]].head(7))
-  col2.table(list2[[ "Név", "link","citations"]].head(7))
-  col3.table(df[[ "év", "szerző","cím"]])
-  col4.table(list4[[ "Név", "link","hIndex"]].head(7))
-
-
-
-
-
+  col3.table(list3[[ "Név", "link","citations"]].head(7))
+  col4.table(list4[[ "év", "szerző","cím","citations"]].head(7))
+  col5.table(pubs[[ "év", "szerző","cím"]].head(7))
+  col6.table(list6[[ "Név", "link","hIndex"]].head(7))
 
 
 def load():
@@ -87,35 +100,61 @@ def load():
   relations_person=relations_person.drop(['target'], axis=1)
   relations_person=relations_person.rename(columns={"Név": "target"})
   return relations_person
-def draw(relations_person):
+def draw(relations_person,dep2):
   G = nx.Graph()
+  relations_person["qScore"] = relations_person["qScore"] + 1
   G = nx.from_pandas_edgelist(relations_person, "source", "target", ["qScore"])
-  g1 = net.Network(height='700px',notebook=True)
-  g1.from_nx(G)
+  c = greedy_modularity_communities(G,resolution =1)
+  df=pd.DataFrame()
+  communities = sorted(c, key=len, reverse=True)
+  color=["#00008B", "#8A2BE2", "#8B2323", "#9C661F", "#458B00", "#FFD700", "#1C1C1C", "#BFEFFF", "#FFAEB9", "#C0FF3E", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
+  for i in range(len(communities)):
+    com=relations_person[relations_person['source'].isin(communities[i])]
+    com["color"]=color[i]
+    df=pd.concat([df,com], ignore_index=True)
+  
+  g1 = Network(height='600px',notebook=True)
+  g1.barnes_hut()
+  sources = df['source']
+  targets = df['target']
+  weights = df['qScore']
+  color = df['color']
+  valu = df[dep2]
+  edge_data = zip(sources, targets, weights,color,valu)
+  for e in edge_data:
+                src = e[0]
+                dst = e[1]
+                w = e[2]
+                co = e[3]
+                val= e[4]
+                g1.add_node(src, src, color=co,size=100+(val+1)*10,font="120px arial black")
+                g1.add_node(dst, dst,  color=co,size=100,font="120px arial black")
+                g1.add_edge(src, dst, value=w, color=	"#838B8B",size=100)
+
   g1.show('example.html')
   display(HTML('example.html'))
   HtmlFile = open("example.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
   components.html(source_code, height = 2300,width=1650)
-def page4_1():
+def page4_1(dep2):
     relations_person=load()
-    draw(relations_person)
-def page4_2():
+    draw(relations_person,dep2)
+def page4_2(dep2):
     relations_person=load()
     relations_person = relations_person.loc[relations_person['Tanszék'] == "Analízis"]
-    draw(relations_person)
-def page4_3():
+    draw(relations_person,dep2)
+def page4_3(dep2):
     relations_person=load()
     relations_person = relations_person.loc[relations_person['Tanszék'] == "Geometria"]
-    draw(relations_person)
-def page4_4():
+    draw(relations_person,dep2)
+def page4_4(dep2):
     relations_person=load()
     relations_person = relations_person.loc[relations_person['Tanszék'] == "Differenciálegyenletek"]
-    draw(relations_person)
-def page4_5():
+    draw(relations_person,dep2)
+def page4_5(dep2):
     relations_person=load()
     relations_person = relations_person.loc[relations_person['Tanszék'] == "Sztochasztika"]
-    draw(relations_person)
+    draw(relations_person,dep2)
 
 st.set_page_config(page_title="My Streamlit App", page_icon=":guardsman:", layout="wide")
 st.markdown("# Research MTMT")
@@ -134,13 +173,14 @@ if selected == "Top results":
 
 if selected == "Research graph":
  dep = st.selectbox("by departement", ["all","Analízis", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
  if dep == "all":
-    page4_1()
+    page4_1(dep2)
  if dep == "Analízis":
-    page4_2()
+    page4_2(dep2)
  if dep == "Geometria":
-    page4_3()
+    page4_3(dep2)
  if dep == "Differenciálegyenletek":
-    page4_4()
+    page4_4(dep2)
  if dep == "Sztochasztika":
-    page4_5()
+    page4_5(dep2)
