@@ -73,6 +73,8 @@ def page3():
   people=pd.read_csv('people_flt.csv')
   scores=pd.read_csv('node_person.csv')
   df=pd.read_csv('percentille.csv')
+  df["cím"] = df["cím"].str.lower()
+  df["cím"] = df["cím"].str.capitalize()
   pubs=df[df["1.00%"]>0]
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
   scores["link"] = "https://m2.mtmt.hu/gui2/?type=authors&mode=browse&sel="+ scores["MTMT"].apply(str) +"&view=simpleList"
@@ -81,11 +83,11 @@ def page3():
   df.rename(columns={"idézettség": "citations"}, inplace=True)
   list4=df.sort_values(by=["citations"],ascending=False)
   list6=scores.sort_values(by=["hIndex"],ascending=False)
-  col1.table(list1[[ "Név", "link","ifScore"]].head(7))
-  col3.table(list3[[ "Név", "link","citations"]].head(7))
-  col4.table(list4[[ "év", "szerző","cím","citations"]].head(7))
-  col5.table(pubs[[ "év", "szerző","cím"]].head(7))
-  col6.table(list6[[ "Név", "link","hIndex"]].head(7))
+  col1.table(list1[[ "Név","ifScore"]].head(10))
+  col3.table(list3[[ "Név","citations"]].head(10))
+  col4.table(list4[[ "év", "szerző","cím","citations"]].head(10))
+  col5.table(pubs[[ "év", "szerző","cím"]].head(10))
+  col6.table(list6[[ "Név","hIndex"]].head(10))
 
 
 def load():
@@ -99,27 +101,21 @@ def load():
   relations_person=pd.merge(relations_person, pubs[["target", "Név"]], how='inner',  on=["target"])
   relations_person=relations_person.drop(['target'], axis=1)
   relations_person=relations_person.rename(columns={"Név": "target"})
+  relations_person.loc[relations_person["Tanszék"] == "Analízis", "color"] = '#4C78A8'
+  relations_person.loc[relations_person["Tanszék"] == "Geometria", "color"] = '#F58518'
+  relations_person.loc[relations_person["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
+  relations_person.loc[relations_person["Tanszék"] == "Sztochasztika", "color"] = '#72B7B2'
   return relations_person
 def draw(relations_person,dep2):
   G = nx.Graph()
   relations_person["qScore"] = relations_person["qScore"] + 1
-  G = nx.from_pandas_edgelist(relations_person, "source", "target", ["qScore"])
-  c = greedy_modularity_communities(G,resolution =1)
-  df=pd.DataFrame()
-  communities = sorted(c, key=len, reverse=True)
-  color=["#00008B", "#8A2BE2", "#8B2323", "#9C661F", "#458B00", "#FFD700", "#1C1C1C", "#BFEFFF", "#FFAEB9", "#C0FF3E", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
-  for i in range(len(communities)):
-    com=relations_person[relations_person['source'].isin(communities[i])]
-    com["color"]=color[i]
-    df=pd.concat([df,com], ignore_index=True)
-  
   g1 = Network(height='600px',notebook=True)
   g1.barnes_hut()
-  sources = df['source']
-  targets = df['target']
-  weights = df['qScore']
-  color = df['color']
-  valu = df[dep2]
+  sources = relations_person['source']
+  targets = relations_person['target']
+  weights = relations_person['qScore']
+  color = relations_person['color']
+  valu = relations_person[dep2]
   edge_data = zip(sources, targets, weights,color,valu)
   for e in edge_data:
                 src = e[0]
