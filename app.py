@@ -51,25 +51,19 @@ def page3():
 
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
   col1.subheader("Authors with top impact ")
-  col2.subheader("publications with top impact ")
 
   col3.subheader("The most cited authors")
   col4.subheader("The most cited publications")
 
 
-  col5.subheader("Most influential publications")
-  col6.subheader("Researchers with top H index")
-
-
-  
+  col2.subheader("Most influential publications")
+  col5.subheader("Researchers with top H index")
   col1.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
-  col2.write("publications with top impact factor The publications of the faculty having the highest impact factor are as follows.")
-
   col3.write("Based on the number of citations according to  MTMT portal, the most cited authors of the faculty are as follows (one author is counted only once).")
   col4.write("Based on the number of citations according to MTMT portal , the most cited publications of the faculty are as follows (one author is counted only once).")
 
-  col5.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
-  col6.write("The list of the researchers having the highest H index are as follows.")
+  col2.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
+  col5.write("The list of the researchers having the highest H index are as follows.")
   people=pd.read_csv('people_flt.csv')
   scores=pd.read_csv('node_person.csv')
   df=pd.read_csv('percentille.csv')
@@ -86,8 +80,8 @@ def page3():
   col1.table(list1[[ "Név","ifScore"]].head(10))
   col3.table(list3[[ "Név","citations"]].head(10))
   col4.table(list4[[ "év", "szerző","cím","citations"]].head(10))
-  col5.table(pubs[[ "év", "szerző","cím"]].head(10))
-  col6.table(list6[[ "Név","hIndex"]].head(10))
+  col2.table(pubs[[ "év", "szerző","cím"]].head(10))
+  col5.table(list6[[ "Név","hIndex"]].head(10))
 
 
 def load(x):
@@ -238,6 +232,7 @@ if selected == "Department comparison":
 if selected == "Research graph":
  dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
+ st.subheader(':#4C78A8[colors]')
  if dep == "all":
     page4_1(dep2)
  if dep == "Analízis":
