@@ -232,7 +232,14 @@ if selected == "Department comparison":
 if selected == "Research graph":
  dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
- st.subheader(':#4C78A8[colors]')
+ col0,col1, col2 ,col3, col4,col5= st.columns(6)
+ col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
+ col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
+ col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"Algebra"}</h1>', unsafe_allow_html=True)
+ col3.markdown(f'<h1 style="color:#F58518;font-size:14px;">{"Geometria"}</h1>', unsafe_allow_html=True)
+ col4.markdown(f'<h1 style="color:#E45756;font-size:14px;">{"Differenciálegyenletek"}</h1>', unsafe_allow_html=True)
+ col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"Sztochasztika"}</h1>', unsafe_allow_html=True)
+
  if dep == "all":
     page4_1(dep2)
  if dep == "Analízis":
