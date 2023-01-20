@@ -18,7 +18,7 @@ def page1():
   col3.subheader("Citations")
   col4.subheader("Impact factor")
   col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories, based on data from MTMT.")
-  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75% and bottom 25% quartiles of the ranking. There are several organisations that provide rankings by research fields, and here we show statistics according to the Scimago ranking.")
+  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75%.")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
   pubs=pd.read_csv("mtmt-faculty-yearly.csv")
@@ -86,6 +86,7 @@ def page3():
 
 def load(x):
   pubs=x
+  pubs['citations'] = pubs['citations'] / 10
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -93,14 +94,19 @@ def load(x):
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
   relations_person=pd.read_csv('relations_person.csv')
   pubs=pubs.rename(columns={"MTMT": "source"})
-  relations_person=pd.merge(relations_person, pubs, how='inner',  on=["source"])
+  relations_person=pd.merge(relations_person[["source", "target", "qScore"]], pubs[["source", "Név", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["source"])
   relations_person=relations_person.rename(columns={"color": "color1"})
+  relations_person=relations_person.rename(columns={"pubCount": "pubCount1"})
+  relations_person=relations_person.rename(columns={"ifCount": "ifCount1"})
+  relations_person=relations_person.rename(columns={"citations": "citations1"})
+  relations_person=relations_person.rename(columns={"hIndex": "hIndex1"})
   relations_person=relations_person.drop(['source'], axis=1)
   relations_person=relations_person.rename(columns={"Név": "source"})
   pubs=pubs.rename(columns={"source": "target"})
-  relations_person=pd.merge(relations_person, pubs[["target", "Név", "color"]], how='inner',  on=["target"])
+  relations_person=pd.merge(relations_person[["source", "target", "qScore","color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["target", "Név", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["target"])
   relations_person=relations_person.drop(['target'], axis=1)
   relations_person=relations_person.rename(columns={"Név": "target"})
+
 
   return relations_person
 def draw(relations_person,dep2):
@@ -114,7 +120,8 @@ def draw(relations_person,dep2):
   color = relations_person['color']
   color1 = relations_person['color1']
   valu = relations_person[dep2]
-  edge_data = zip(sources, targets, weights,color,valu,color1)
+  valu1 = relations_person[dep2+"1"]
+  edge_data = zip(sources, targets, weights,color,valu,color1,valu1)
   for e in edge_data:
                 src = e[0]
                 dst = e[1]
@@ -122,11 +129,12 @@ def draw(relations_person,dep2):
                 co = e[3]
                 val= e[4]
                 co1= e[5]
+                val1= e[6]
                 if dst=="0":
-                  g1.add_node(src, src, color=co1,size=100+(val+1),font="120px arial black")
+                  g1.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
                 else:
-                  g1.add_node(src, src, color=co1,size=100+(val+1)*10,font="120px arial black")
-                  g1.add_node(dst, dst,  color=co,size=100,font="120px arial black")
+                  g1.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                  g1.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
                   g1.add_edge(src, dst, value=w, color=	"#838B8B",size=100)
 
   g1.show('example.html')
@@ -136,31 +144,44 @@ def draw(relations_person,dep2):
   components.html(source_code, height = 2300,width=1650)
 def page4_1(dep2):
     pubs=pd.read_csv('people_flt.csv')
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
     draw(relations_person,dep2)
 def page4_2(dep2):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Analízis"]
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
     draw(relations_person,dep2)
 def page4_3(dep2):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Geometria"]
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
+
     relations_person=load(pubs)
     draw(relations_person,dep2)
 def page4_4(dep2):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Differenciálegyenletek"]
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
     draw(relations_person,dep2)
 def page4_5(dep2):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Sztochasztika"]
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
     draw(relations_person,dep2)
 def page4_6(dep2):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Algebra"]
+    node=pd.read_csv('node_person.csv')
+    pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
     draw(relations_person,dep2)
 
@@ -172,9 +193,9 @@ def page5():
   col1.subheader("Number of publications")
   col2.subheader("Rank of journal publications")
   col3.subheader("Citations")
-  col4.subheader("Impact factor")
+  col4.subheader("Normalized Impact factor")
   col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories, based on data from MTMT.")
-  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75% and bottom 25% quartiles of the ranking. There are several organisations that provide rankings by research fields, and here we show statistics according to the Scimago ranking.")
+  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75% .")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
   pubs=pd.read_csv("mtmt-yearly1.csv")
@@ -183,11 +204,32 @@ def page5():
   c=pubs[pubs['Tanszék'] == "Geometry"]
   d=pubs[pubs['Tanszék'] == "Differential_Equations"]
   e=pubs[pubs['Tanszék'] == "Stochastics"]
-  pubs = pubs.reset_index()
-  fig = px.bar(pubs, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  slider_range=col1.slider("year interval",2003, 2022,value=[2005,2020])
+  maxYear = slider_range[1]
+  minYear = slider_range[0]
+  df = pubs
+  df = df[(df["Év"]>=minYear) & (df["Év"]<=maxYear)]
+  df=df.groupby(['Tanszék']).sum()
+  df = df.reset_index()
+  fig = px.bar(df, x="Tanszék", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
   col1.plotly_chart(fig, use_container_width=True)
-  fig=px.bar(pubs, x="Év", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+
+
+
+  slider_range2=col2.slider("year interval",2003, 2022,value=[2005,2020] ,key = "ab")
+  maxYear2 = slider_range2[1]
+  minYear2 = slider_range2[0]
+  df = pubs
+  df = df[(df["Év"]>=minYear2) & (df["Év"]<=maxYear2)]
+  df=df.groupby(['Tanszék']).sum()
+  df = df.reset_index()
+  fig = px.bar(df, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig = go.Figure(data=[
     go.Bar(name='Analysis', x=pubs["Év"], y=a["I pontszám"]),
@@ -197,10 +239,15 @@ def page5():
     go.Bar(name='Stochastics', x=pubs["Év"], y= e["I pontszám"])
   ])
   col3.plotly_chart(fig, use_container_width=True)
+
+
+
   fig = go.Figure(data=[
-    go.Bar(name='IF', x=pubs["Év"], y=pubs["IF"]),
-    go.Bar(name='Normalizált IF', x=pubs["Év"], y=pubs["Normalizált IF"]),
-    go.Bar(name='IF folyóiratok száma', x=pubs["Év"], y= pubs["IF folyóiratok száma"])
+    go.Bar(name='Analysis', x=pubs["Év"], y=a["Normalizált IF"]),
+    go.Bar(name='Algebra', x=pubs["Év"], y=b["Normalizált IF"]),
+    go.Bar(name='Geometry', x=pubs["Év"], y= c["Normalizált IF"]),
+    go.Bar(name='Differential Equations', x=pubs["Év"], y= d["Normalizált IF"]),
+    go.Bar(name='Stochastics', x=pubs["Év"], y= e["Normalizált IF"])
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
