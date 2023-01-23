@@ -73,13 +73,14 @@ def page3():
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
   scores["link"] = "https://m2.mtmt.hu/gui2/?type=authors&mode=browse&sel="+ scores["MTMT"].apply(str) +"&view=simpleList"
   list1=scores.sort_values(by=["ifScore"],ascending=False)
-  list3=scores.sort_values(by=["citations"],ascending=False)
-  df.rename(columns={"idézettség": "citations"}, inplace=True)
-  list4=df.sort_values(by=["citations"],ascending=False)
+  df11=pd.read_csv('independentCitingPubCount.csv')
+  list3=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
+  df1=pd.read_csv('publication.csv')
+  list4=df1.sort_values(by=["independentCitingPubCount"],ascending=False)
   list6=scores.sort_values(by=["hIndex"],ascending=False)
   col1.table(list1[[ "Név","ifScore"]].head(10))
-  col3.table(list3[[ "Név","citations"]].head(10))
-  col4.table(list4[[ "év", "szerző","cím","citations"]].head(10))
+  col3.table(list3[[ "Név","independentCitingPubCount"]].head(10))
+  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
   col2.table(pubs[[ "év", "szerző","cím"]].head(10))
   col5.table(list6[[ "Név","hIndex"]].head(10))
 
@@ -110,9 +111,8 @@ def load(x):
 
   return relations_person
 def draw(relations_person,dep2):
-  G = nx.Graph()
   relations_person["qScore"] = relations_person["qScore"] + 1
-  g1 = Network(height='600px',notebook=True)
+  g1 = Network(height='600px',notebook=True,directed=True)
   g1.barnes_hut()
   sources = relations_person['source']
   targets = relations_person['target']
