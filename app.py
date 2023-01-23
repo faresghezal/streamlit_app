@@ -112,7 +112,7 @@ def load(x):
   return relations_person
 def draw(relations_person,dep2):
   relations_person["qScore"] = relations_person["qScore"] + 1
-  g1 = Network(height='600px',notebook=True,directed=True)
+  g1 = Network(height='600px',notebook=True)
   g1.barnes_hut()
   sources = relations_person['source']
   targets = relations_person['target']
