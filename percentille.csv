@@ -12,7 +12,7 @@ Sztochasztika,2016,Bálint Péter,The flow of two falling balls mixes rapidly,29
 Sztochasztika,2016,Bálint Péter,MEAN-FIELD COUPLING OF IDENTICAL EXPANDING CIRCLE MAPS,3082950,11,0,0,0,0,0,1
 Sztochasztika,2012,Bálint Péter,Example for Exponential Growth of Complexity in a Finite Horizon Multi-dimensional Dispersing Billiard,2210460,9,0,0,0,0,0,1
 Sztochasztika,2012,Bálint Péter,Statistical properties of the system of two falling balls,2210459,3,0,0,0,0,0,0
-Sztochasztika,2017,Barabás Béla,Impact of the Discovery of Fluorous Biphasic Systems on Chemistry: A Statistical and Network Analysis,3253925,11,0,0,0,0,0,1
+Sztochasztika,2017,Barabás Béla,Impact of the Discovery of Fluorous Biphasic Systems on Chemistry: A Statistical and Network Analysis,3253925,10,0,0,0,0,0,0
 Sztochasztika,2016,Barabás Béla,Natural Abundance Isotopic Chirality in the Reagents of the Soai Reaction,2994394,6,0,0,0,0,0,0
 Sztochasztika,2016,Barabás Béla,Impact of the Soai-autocatalysis on natural sciences,2975039,14,0,0,0,0,0,1
 Sztochasztika,2015,Barabás Béla,Stochastic and empirical models of the absolute asymmetric synthesis by the Soai-autocatalysis,2837091,12,0,0,0,0,0,0
@@ -32,7 +32,7 @@ Sztochasztika,2020,Bárány Balázs,"Domination, almost additivity, and thermody
 Sztochasztika,2019,Bárány Balázs,On the dimension of triangular self-affine sets,3297375,8,0,0,0,0,1,1
 Sztochasztika,2019,Bárány Balázs,Hausdorff dimension of planar self-affine sets and measures,30603311,45,0,0,1,1,1,1
 Sztochasztika,2018,Bárány Balázs,Dimension of self‐affine sets for fixed translation vectors,3365110,13,0,0,0,1,1,1
-Sztochasztika,2018,Bárány Balázs,Pointwise regularity of parameterized affine zipper fractal curves,3353188,8,0,0,0,0,1,1
+Sztochasztika,2018,Bárány Balázs,Pointwise regularity of parameterized affine zipper fractal curves,3353188,9,0,0,0,0,1,1
 Sztochasztika,2018,Bárány Balázs,Dimension maximizing measures for self-affine systems,3253249,15,0,0,0,1,1,1
 Sztochasztika,2017,Bárány Balázs,Ledrappier–Young formula and exact dimensionality of self-affine measures,3253248,26,0,0,0,1,1,1
 Sztochasztika,2016,Bárány Balázs,On the dimension of self-affine sets and measures with overlaps,3101138,8,0,0,0,0,0,1
@@ -50,6 +50,7 @@ Sztochasztika,2014,Bolla Marianna,"SVD, discrepancy, and regular structure of co
 Sztochasztika,2014,Bolla Marianna,"Modularity spectra, eigen-subspaces, and structure of weighted graphs",2694230,5,0,0,0,0,0,1
 Sztochasztika,2012,Bolla Marianna,Testability of minimum balanced multiway cut densities,2683480,4,0,0,0,0,0,0
 Algebra,2019,Borbély Gábor,Towards a Universal Semantic Dictionary,30825230,2,0,0,0,0,0,0
+Analízis,2023,Bunth Gergely,Super-exponential distinguishability of correlated quantum states,33576979,0,0,0,0,0,0,0
 Analízis,2022,Bunth Gergely,Equivariant relative submajorization,33214013,0,0,0,0,0,0,0
 Analízis,2021,Bunth Gergely,Asymptotic relative submajorization of multiple-state boxes,32112122,0,0,0,0,0,0,0
 Differenciálegyenletek,2022,Burai Pál,Limit theorems for Bajraktarevic and Cauchy quotient means of independent identically distributed random variables,32273473,3,0,0,0,1,1,1
@@ -103,7 +104,7 @@ Differenciálegyenletek,2017,Faragó István György,Qualitative properties of n
 Differenciálegyenletek,2017,Faragó István György,Discrete nonnegativity for nonlinear cooperative parabolic PDE systems with non-monotone coupling,3105334,2,0,0,0,0,0,0
 Differenciálegyenletek,2017,Faragó István György,Improvement of accuracy of multi-scale models of Li-ion batteries by applying operator splitting techniques,3128939,7,0,0,0,0,0,1
 Differenciálegyenletek,2017,Faragó István György,Shooting-projection method for two-point boundary value problems,3247368,19,0,0,0,1,1,1
-Differenciálegyenletek,2017,Faragó István György,Stability of the Richardson Extrapolation combined with some implicit Runge-Kutta methods,3060622,8,0,0,0,0,0,1
+Differenciálegyenletek,2017,Faragó István György,Stability of the Richardson Extrapolation combined with some implicit Runge-Kutta methods,3060622,9,0,0,0,0,1,1
 Differenciálegyenletek,2016,Faragó István György,On some qualitatively adequate discrete space-time models of epidemic propagation,2922079,12,0,0,0,0,1,1
 Differenciálegyenletek,2016,Faragó István György,Stability of patterns and of constant steady states for a cross-diffusion system,2922088,4,0,0,0,0,0,1
 Differenciálegyenletek,2015,Faragó István György,Numerical stability for nonlinear evolution equations,2922080,1,0,0,0,0,0,0
@@ -125,7 +126,6 @@ Analízis,2015,Farkas Lóránt Ernő,Random Access and Source-Channel Coding Err
 Analízis,2014,Farkas Lóránt Ernő,On capacity regions of discrete asynchronous multiple access channels,2843171,2,0,0,0,0,0,0
 Algebra,2022,Ferenczi Miklós,On the algebraization of Henkin-type second-order logic,32772067,0,0,0,0,0,0,0
 Algebra,2016,Ferenczi Miklós,On the definition and the representability of quasi-polyadic equality algebras,2995189,1,0,0,0,0,0,0
-Algebra,2015,Ferenczi Miklós,Probabilities defined on standard and non-standard cylindric set algebras,2722318,1,0,0,0,0,0,0
 Algebra,2012,Ferenczi Miklós,The polyadic generalization of the Boolean axiomatization of fields of sets,1745645,12,0,0,0,0,0,1
 Differenciálegyenletek,2015,Fülöp Otília,Special Minimum Cuts in Directed Graphs,2663983,0,0,0,0,0,0,0
 Geometria,2022,G. Horváth Ákos,A two-vertex theorem for normal tilings,32864242,0,0,0,0,0,0,0
@@ -230,10 +230,13 @@ Algebra,2021,Kiss Sándor,Generalized asymptotic Sidon basis,31824350,2,0,0,0,0,
 Algebra,2021,Kiss Sándor,An identification system based on the explicit isomorphism problem,32474310,0,0,0,0,0,0,0
 Algebra,2021,Kiss Sándor,On asymptotic bases which have distinct subset sums,32641501,0,0,0,0,0,0,0
 Algebra,2021,Kiss Sándor,On a problem of Chen and Fang related to infinite additive complements,32641504,0,0,0,0,0,0,0
+Algebra,2019,Kiss Sándor,On minimal additive complements of integers,30734628,6,0,0,0,0,1,1
 Algebra,2019,Kiss Sándor,Generalization of some results about the regularity properties of an additive representation function,30734589,1,0,0,0,0,0,0
+Algebra,2018,Kiss Sándor,On a conjecture of Erdős about sets without k pairwise coprime integers,31824366,0,0,0,0,0,0,0
 Algebra,2018,Kiss Sándor,On generalized Stanley sequences,3392188,1,0,0,0,0,0,0
 Algebra,2017,Kiss Sándor,Partitions of the set of nonnegative integers with the same representation functions,3219978,15,0,0,0,1,1,1
 Algebra,2017,Kiss Sándor,On the multiplicativity of the linear combination of additive representation functions,3126424,1,0,0,0,0,0,0
+Algebra,2016,Kiss Sándor,On the maximum values of the additive representation functions,3120839,1,0,0,0,0,0,0
 Algebra,2015,Kiss Sándor,Approximate Counting of Graphical Realizations,2919096,32,0,0,0,0,0,1
 Algebra,2014,Kiss Sándor,On additive complement of a finite set,2696839,7,0,0,0,0,0,1
 Algebra,2014,Kiss Sándor,Sets with almost coinciding representation functions,2543166,2,0,0,0,0,0,0
@@ -316,12 +319,13 @@ Geometria,2018,Lángi Zsolt,A characterization of affinely regular polygons,3058
 Geometria,2017,Lángi Zsolt,On multiple Borsuk numbers in normed spaces,3254754,1,0,0,0,0,0,0
 Geometria,2016,Lángi Zsolt,A topological classification of convex bodies,2983833,8,0,0,0,0,0,1
 Geometria,2016,Lángi Zsolt,On non-separable families of positive homothetic convex bodies,3103920,3,0,0,0,0,0,0
+Geometria,2016,Lángi Zsolt,Separation with restricted families of sets,3099221,1,0,0,0,0,0,0
 Geometria,2016,Lángi Zsolt,On a normed version of a Rogers-Shephard type problem,2820801,2,0,0,0,0,0,0
 Geometria,2015,Lángi Zsolt,On the average number of normals through points of a convex body,2820797,1,0,0,0,0,0,0
 Geometria,2014,Lángi Zsolt,The robustness of equilibria on convex solids,2694521,4,0,0,0,0,0,1
 Geometria,2013,Lángi Zsolt,Ball and spindle convexity with respect to a convex body,2229776,14,0,0,0,0,1,1
 Differenciálegyenletek,2022,Lóczi Lajos,Linear multistep methods and global Richardson extrapolation,32896186,0,0,0,0,0,0,0
-Differenciálegyenletek,2020,Lóczi Lajos,General relaxation methods for initial-value problems with application to multistep schemes,31681617,14,0,0,0,1,1,1
+Differenciálegyenletek,2020,Lóczi Lajos,General relaxation methods for initial-value problems with application to multistep schemes,31681617,15,0,0,0,1,1,1
 Differenciálegyenletek,2016,Lóczi Lajos,Strong stability preserving explicit linear multistep methods with variable step size,3085091,14,0,0,0,0,1,1
 Differenciálegyenletek,2015,Lóczi Lajos,On the absolute stability regions corresponding to partial sums of the exponential function,2729838,4,0,0,0,0,0,1
 Differenciálegyenletek,2014,Lóczi Lajos,Internal error propagation in explicit Runge-Kutta methods,2729833,4,0,0,0,0,0,1
@@ -385,23 +389,23 @@ Analízis,2013,Molnár Lajos Gábor,Jordan triple endomorphisms and isometries o
 Analízis,2012,Molnár Lajos Gábor,Sequential endomorphisms of finite-dimensional Hilbert space effect algebras,2055509,4,0,0,0,0,0,0
 Analízis,2012,Molnár Lajos Gábor,Isometries of the unitary group,2055508,24,0,0,0,1,1,1
 Analízis,2012,Molnár Lajos Gábor,Transformations of the unitary group on a Hilbert space,2055506,17,0,0,0,0,1,1
-Sztochasztika,2022,Molontay Roland,Early prediction of acute necrotizing pancreatitis by artificial intelligence : a prospective cohort-analysis of 2387 cases,32823615,2,0,0,0,1,1,1
-Sztochasztika,2022,Molontay Roland,EASY-APP: An artificial intelligence model and application for early and easy prediction of severity in acute pancreatitis,32865751,6,0,0,1,1,1,1
+Sztochasztika,2022,Molontay Roland,Early prediction of acute necrotizing pancreatitis by artificial intelligence : a prospective cohort-analysis of 2387 cases,32823615,4,0,0,0,1,1,1
+Sztochasztika,2022,Molontay Roland,EASY-APP: An artificial intelligence model and application for early and easy prediction of severity in acute pancreatitis,32865751,9,0,0,1,1,1,1
 Sztochasztika,2021,Molontay Roland,Traits versus Grades,31867944,5,0,0,0,0,1,1
-Analízis,2022,Mosonyi Milán,Quantum Rényi Divergences and the Strong Converse Exponent of State Discrimination in Operator Algebras,33282175,0,0,0,0,0,0,0
-Analízis,2022,Mosonyi Milán,Test-measured Rényi divergences,33156881,0,0,0,0,0,0,0
-Analízis,2022,Mosonyi Milán,On the error exponents of binary state discrimination with composite hypotheses,32107661,3,0,0,0,1,1,1
-Analízis,2021,Mosonyi Milán,Divergence radii and the strong converse exponent of classical-quantum channel coding with constant compositions,30929673,5,0,0,0,0,1,1
-Analízis,2017,Mosonyi Milán,"Quantum f-divergences and error correction (vol 23, pg 691, 2011)",3279778,2,0,0,0,0,0,0
-Analízis,2017,Mosonyi Milán,Different quantum f -divergences and the reversibility of quantum operations,3256009,41,0,0,0,1,1,1
-Analízis,2017,Mosonyi Milán,Strong Converse Exponent for Classical-Quantum Channel Coding,3254496,40,0,0,0,1,1,1
-Analízis,2016,Mosonyi Milán,Strong Converse Exponents for a Quantum Channel Discrimination Problem and Quantum-Feedback-Assisted Communication,3102141,109,0,0,0,1,1,1
-Analízis,2015,Mosonyi Milán,Two Approaches to Obtain the Strong Converse Exponent of Quantum Hypothesis Testing for General Sequences of Quantum States,2987723,13,0,0,0,0,0,1
+Analízis,2022,Mosonyi Milán,Quantum Rényi Divergences and the Strong Converse Exponent of State Discrimination in Operator Algebras,33282175,2,0,0,0,1,1,1
+Analízis,2022,Mosonyi Milán,Test-measured Rényi divergences,33156881,4,0,0,0,1,1,1
+Analízis,2022,Mosonyi Milán,On the error exponents of binary state discrimination with composite hypotheses,32107661,4,0,0,0,1,1,1
+Analízis,2021,Mosonyi Milán,Divergence radii and the strong converse exponent of classical-quantum channel coding with constant compositions,30929673,11,0,0,0,1,1,1
+Analízis,2017,Mosonyi Milán,"Erratum: Quantum f-divergences and error correction (Reviews in Mathematical Physics, Vol. 23, No. 7, (2011) 691-747)",3279778,2,0,0,0,0,0,0
+Analízis,2017,Mosonyi Milán,Different quantum f -divergences and the reversibility of quantum operations,3256009,71,0,0,0,1,1,1
+Analízis,2017,Mosonyi Milán,Strong Converse Exponent for Classical-Quantum Channel Coding,3254496,69,0,0,0,1,1,1
+Analízis,2016,Mosonyi Milán,Strong Converse Exponents for a Quantum Channel Discrimination Problem and Quantum-Feedback-Assisted Communication,3102141,120,0,0,0,1,1,1
+Analízis,2015,Mosonyi Milán,Two Approaches to Obtain the Strong Converse Exponent of Quantum Hypothesis Testing for General Sequences of Quantum States,2987723,16,0,0,0,0,0,1
 Analízis,2015,Mosonyi Milán,Quantum Hypothesis Testing and the Operational Interpretation of the Quantum Rényi Relative Entropies,2849802,143,0,0,0,1,1,1
-Analízis,2015,Mosonyi Milán,Coding theorems for compound problems via quantum Rényi divergences,2898155,23,0,0,0,0,1,1
-Analízis,2014,Mosonyi Milán,Upper bounds on the error probabilities and asymptotic error exponents in quantum multiple state discrimination,2849786,14,0,0,0,0,0,1
-Analízis,2013,Mosonyi Milán,A smooth entropy approach to quantum hypothesis testing and the classical capacity of quantum channels,2696678,23,0,0,0,0,1,1
-Analízis,2012,Mosonyi Milán,Quantum state discrimination bounds for finite sample size,2696676,20,0,0,0,0,0,1
+Analízis,2015,Mosonyi Milán,Coding theorems for compound problems via quantum Rényi divergences,2898155,29,0,0,0,0,1,1
+Analízis,2014,Mosonyi Milán,Upper bounds on the error probabilities and asymptotic error exponents in quantum multiple state discrimination,2849786,26,0,0,0,0,1,1
+Analízis,2013,Mosonyi Milán,A smooth entropy approach to quantum hypothesis testing and the classical capacity of quantum channels,2696678,44,0,0,0,1,1,1
+Analízis,2012,Mosonyi Milán,Quantum state discrimination bounds for finite sample size,2696676,30,0,0,0,0,1,1
 Algebra,2022,Nagy Attila,On commutative elemental annihilator monoids,33189822,0,0,0,0,0,0,0
 Algebra,2016,Nagy Attila,Separators of ideals in multiplicative semigroups of unique factorization domains,2932287,1,0,0,0,0,0,0
 Algebra,2016,Nagy Attila,A Note on Semigroup Algebras of Permutable Semigroups,3080655,0,0,0,0,0,0,0
@@ -415,6 +419,7 @@ Algebra,2021,Nagy Gábor Péter,New Steiner 2-designs from old ones by paramodif
 Algebra,2020,Nagy Gábor Péter,Codes and gap sequences of Hermitian curves,30889887,1,0,0,0,0,0,0
 Algebra,2019,Nagy Gábor Péter,Inherited conics in Hall planes,30401306,0,0,0,0,0,0,0
 Algebra,2019,Nagy Gábor Péter,Light dual multinets of order six in the projective plane,30774019,0,0,0,0,0,0,0
+Algebra,2019,Nagy Gábor Péter,Hemisystems of the Hermitian surface,30338607,4,0,0,0,0,0,1
 Algebra,2019,Nagy Gábor Péter,On the geometry of full points of abstract unitals,30773995,1,0,0,0,0,0,0
 Algebra,2018,Nagy Gábor Péter,Group-labeled light dual multinets in the projective plane,27593553,1,0,0,0,0,0,0
 Algebra,2016,Nagy Gábor Péter,3-Nets realizing a diassociative loop in a projective plane,3071615,0,0,0,0,0,0,0
@@ -423,6 +428,7 @@ Algebra,2015,Nagy Gábor Péter,k-nets embedded in a projective plane over a fie
 Algebra,2014,Nagy Gábor Péter,Solvability of commutative automorphic loops,2381050,7,0,0,0,0,0,1
 Algebra,2014,Nagy Gábor Péter,Linear groups as right multiplication groups of quasifields,2372271,0,0,0,0,0,0,0
 Algebra,2013,Nagy Gábor Péter,Hermitian codes from higher degree places,2372260,14,0,0,0,0,1,1
+Algebra,2013,Nagy Gábor Péter,On small 3-nets embedded in a projective plane over a field,2372264,6,0,0,0,0,0,1
 Analízis,2020,Nagy Ilona,Two Nested Limit Cycles in Two-Species Reactions,31641309,1,0,0,0,0,0,0
 Analízis,2014,Nagy Ilona,Quadratic first integrals of kinetic differential equations,2696846,4,0,0,0,0,0,0
 Analízis,2012,Nagy Ilona,Microscopic reversibility or detailed balance in ion channel models,1870481,4,0,0,0,0,0,0
@@ -441,6 +447,7 @@ Sztochasztika,2015,Pete Gábor,"Local time on the exceptional set of dynamical p
 Sztochasztika,2014,Pete Gábor,The near-critical planar FK-Ising model,2680476,16,0,0,0,0,0,1
 Sztochasztika,2013,Pete Gábor,"Pivotal, cluster and interface measures for critical planar percolation",2668429,50,0,0,0,1,1,1
 Sztochasztika,2012,Pete Gábor,"Exit time tails from pairwise decorrelation in hidden Markov chains, with applications to dynamical percolation",2688091,5,0,0,0,0,0,1
+Analízis,2023,Pitrik József,Quantum Wasserstein isometries on the qubit state space,33578756,0,0,0,0,0,0,0
 Analízis,2021,Pitrik József,"A divergence center interpretation of general symmetric Kubo-Ando means, and related weighted multivariate operator means",31795053,4,0,0,0,1,1,1
 Analízis,2020,Pitrik József,Quantum Hellinger distances revisited,30926261,8,0,0,0,0,0,1
 Analízis,2015,Pitrik József,On the joint convexity of the Bregman divergence of matrices,2885837,22,0,0,0,0,0,1
@@ -475,10 +482,16 @@ Algebra,2022,Sági Gábor,On Some Model Theoretic Properties of Totally Bounded 
 Algebra,2021,Sági Gábor,The profinite topology of free groups and weakly generic tuples of automorphisms,31926527,1,0,0,0,0,0,1
 Algebra,2020,Sági Gábor,On the automorphism group of homogeneous structures,30877974,2,0,0,0,0,0,1
 Algebra,2013,Sági Gábor,Upward Morley's theorem downward,2499234,4,0,0,0,0,0,1
-Sztochasztika,2018,Sándor Csaba,Generalized Holder Continuity and Oscillation Functions,30418790,0,0,0,0,0,0,0
-Sztochasztika,2014,Sándor Csaba,An Expansion Estimate for Dispersing Planar Billiards with Corner Points,2523602,8,0,0,0,0,0,0
-Sztochasztika,2013,Sándor Csaba,Entropy and Hausdorff Dimension in Random Growing Trees,2226757,2,0,0,0,0,0,0
-Algebra,2015,Simon András,Complexity of equational theory of relational algebras with standard projection elements,2994121,0,0,0,0,0,0,0
+Sztochasztika,2022,Sándor Csaba,ON INTEGER SETS WITH THE SAME REPRESENTATION FUNCTIONS,32754064,0,0,0,0,0,0,0
+Sztochasztika,2022,Sándor Csaba,Generalized Sidon sets of perfect powers,33084270,0,0,0,0,0,0,0
+Sztochasztika,2022,Sándor Csaba,Polynomial Schur’s Theorem,33110355,0,0,0,0,0,0,0
+Sztochasztika,2021,Sándor Csaba,A note on the lower bound of representation functions,32868730,0,0,0,0,0,0,0
+Sztochasztika,2021,Sándor Csaba,On the values of representation functions II.,31934146,1,0,0,0,0,0,1
+Sztochasztika,2019,Sándor Csaba,On infinite multiplicative Sidon sets,30385336,3,0,0,0,0,0,1
+Sztochasztika,2018,Sándor Csaba,Multiplicative bases and an Erdős problem,3332671,6,0,0,0,0,0,1
+Sztochasztika,2018,Sándor Csaba,On some properties of representation functions related to the Erdos-Turan conjecture,3392154,0,0,0,0,0,0,0
+Sztochasztika,2017,Sándor Csaba,A lower bound of Ruzsa’s number related to the Erdős–Turán conjecture,3272159,1,0,0,0,0,0,0
+Sztochasztika,2017,Sándor Csaba,An extension of Nathanson's Theorem on representation functions,2729546,0,0,0,0,0,0,0
 Sztochasztika,2022,Simon Károly,Dimension estimates for C-1 iterated function systems and repellers. Part I,32916675,0,0,0,0,0,0,0
 Sztochasztika,2022,Simon Károly,Dimension estimates for C^1 iterated function systems and repellers. Part II,32185828,1,0,0,0,1,1,1
 Sztochasztika,2022,Simon Károly,Dimension and measure of sums of planar sets and curves,33168630,0,0,0,0,0,0,0
@@ -538,12 +551,15 @@ Differenciálegyenletek,2012,Szűcs Zsolt,The singularity of positive linear fun
 Analízis,2022,Takács Balázs,The structure of algebraic Baer∗-algebras,32871126,0,0,0,0,0,0,0
 Differenciálegyenletek,2022,Takács Bálint Máté,High order discretization methods for spatial-dependent epidemic models,32727930,1,0,0,0,0,1,1
 Differenciálegyenletek,2021,Takács Bálint Máté,Operator splitting for space-dependent epidemic model,31173812,3,0,0,0,0,1,1
+Sztochasztika,2018,Tóth Imre Péter,Generalized Holder Continuity and Oscillation Functions,30418790,0,0,0,0,0,0,0
+Sztochasztika,2014,Tóth Imre Péter,An Expansion Estimate for Dispersing Planar Billiards with Corner Points,2523602,8,0,0,0,0,0,0
+Sztochasztika,2013,Tóth Imre Péter,Entropy and Hausdorff Dimension in Random Growing Trees,2226757,2,0,0,0,0,0,0
 Analízis,2020,Tóth János,Kinetic Modeling of a Consecutive Enzyme-Catalyzed Enantioselective Reaction in Supercritical Media,31622896,0,0,0,0,0,0,0
 Analízis,2020,Tóth János,Automatic kinetic model generation and selection based on concentration versus time curves,30939322,3,0,0,0,0,0,0
 Analízis,2020,Tóth János,How to Generate Species with Positive Concentrations for All Positive Times?,31328460,1,0,0,0,0,0,0
 Analízis,2019,Tóth János,Realizations of kinetic differential equations,30885458,9,0,0,0,0,1,1
 Analízis,2019,Tóth János,On three genetic repressilator topologies,30538844,5,0,0,0,0,0,0
-Analízis,2019,Tóth János,Neural dynamics in co-morbid schizophrenia and OCD: A computational approach,30672665,2,0,0,0,0,0,0
+Analízis,2019,Tóth János,Neural dynamics in co-morbid schizophrenia and OCD: A computational approach,30672665,3,0,0,0,0,0,0
 Analízis,2018,Tóth János,Controllability and reachability of reactions with temperature and inflow control,3341140,5,0,0,0,0,0,0
 Analízis,2016,Tóth János,Invariant planes and periodic oscillations in the may-leonard asymmetric model,3129855,5,0,0,0,0,0,0
 Analízis,2016,Tóth János,Global controllability of chemical reactions,3065117,11,0,0,0,0,0,0
