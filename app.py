@@ -23,17 +23,17 @@ def page1():
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
   pubs=pd.read_csv("mtmt-faculty-yearly.csv")
   pubs = pubs.reset_index()
-  fig = px.bar(pubs, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  fig = px.bar(pubs, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
   col1.plotly_chart(fig, use_container_width=True)
-  fig=px.bar(pubs, x="Év", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig=px.bar(pubs, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
-  fig=px.bar(pubs, x="Év", y=["I pontszám"])
+  fig=px.bar(pubs, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["I pontszám"])
   col3.plotly_chart(fig, use_container_width=True)
   fig = go.Figure(data=[
-    go.Bar(name='IF', x=pubs["Év"], y=pubs["IF"]),
-    go.Bar(name='Normalizált IF', x=pubs["Év"], y=pubs["Normalizált IF"]),
-    go.Bar(name='IF folyóiratok száma', x=pubs["Év"], y= pubs["IF folyóiratok száma"])
+    go.Bar(name='IF',marker_color='#4C78A8', x=pubs["Év"], y=pubs["IF"]),
+    go.Bar(name='Normalizált IF',marker_color='#F58518', x=pubs["Év"], y=pubs["Normalizált IF"]),
+    go.Bar(name='IF folyóiratok száma',marker_color='#E45756', x=pubs["Év"], y= pubs["IF folyóiratok száma"])
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
@@ -88,6 +88,7 @@ def page3():
 def load(x):
   pubs=x
   pubs['citations'] = pubs['citations'] / 10
+  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -204,7 +205,7 @@ def page5():
   df = df[(df["Év"]>=minYear) & (df["Év"]<=maxYear)]
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
-  fig = px.bar(df, x="Tanszék", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  fig = px.bar(df, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
   col1.plotly_chart(fig, use_container_width=True)
 
 
@@ -216,7 +217,7 @@ def page5():
   df = df[(df["Év"]>=minYear2) & (df["Év"]<=maxYear2)]
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
-  fig = px.bar(df, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig = px.bar(df, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
 
 
@@ -225,22 +226,23 @@ def page5():
 
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig = go.Figure(data=[
-    go.Bar(name='Analysis', x=pubs["Év"], y=a["I pontszám"]),
-    go.Bar(name='Algebra', x=pubs["Év"], y=b["I pontszám"]),
-    go.Bar(name='Geometry', x=pubs["Év"], y= c["I pontszám"]),
-    go.Bar(name='Differential Equations', x=pubs["Év"], y= d["I pontszám"]),
-    go.Bar(name='Stochastics', x=pubs["Év"], y= e["I pontszám"])
+    go.Bar(name='Analysis',marker_color='#4C78A8', x=pubs["Év"], y=a["I pontszám"]),
+    go.Bar(name='Algebra',marker_color='#F58518', x=pubs["Év"], y=b["I pontszám"]),
+    go.Bar(name='Geometry',marker_color='#E45756', x=pubs["Év"], y= c["I pontszám"]),
+    go.Bar(name='Differential Equations',marker_color='#72B7B2', x=pubs["Év"], y= d["I pontszám"]),
+    go.Bar(name='Stochastics',marker_color='#54A24B', x=pubs["Év"], y= e["I pontszám"])
   ])
   col3.plotly_chart(fig, use_container_width=True)
 
 
 
+
   fig = go.Figure(data=[
-    go.Bar(name='Analysis', x=pubs["Év"], y=a["Normalizált IF"]),
-    go.Bar(name='Algebra', x=pubs["Év"], y=b["Normalizált IF"]),
-    go.Bar(name='Geometry', x=pubs["Év"], y= c["Normalizált IF"]),
-    go.Bar(name='Differential Equations', x=pubs["Év"], y= d["Normalizált IF"]),
-    go.Bar(name='Stochastics', x=pubs["Év"], y= e["Normalizált IF"])
+    go.Bar(name='Analysis',marker_color='#4C78A8', x=pubs["Év"], y=a["Normalizált IF"]),
+    go.Bar(name='Algebra',marker_color='#F58518', x=pubs["Év"], y=b["Normalizált IF"]),
+    go.Bar(name='Geometry',marker_color='#E45756', x=pubs["Év"], y= c["Normalizált IF"]),
+    go.Bar(name='Differential Equations',marker_color='#72B7B2', x=pubs["Év"], y= d["Normalizált IF"]),
+    go.Bar(name='Stochastics',marker_color='#54A24B', x=pubs["Év"], y= e["Normalizált IF"])
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
@@ -250,6 +252,7 @@ def page5():
 def load1(x,z):
   pubs=x
   pubs['citations'] = pubs['citations'] / 10
+  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -273,6 +276,7 @@ def load1(x,z):
 def load2(x):
   pubs=x
   pubs['citations'] = pubs['citations'] / 10
+  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -447,7 +451,7 @@ st.markdown("# Research MTMT")
 
 selected = option_menu(
     menu_title=None,
-    options=["Publications","Department comparison", "Top results", "citation graph", "co-authorship graph"],
+    options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
     icons=["pencil-fill", "bar-chart-fill"], 
     orientation="horizontal",
 )
@@ -458,7 +462,7 @@ if selected == "Top results":
   page3()
 if selected == "Department comparison":
   page5()
-if selected == "citation graph":
+if selected == "Citation graph":
  dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
@@ -482,7 +486,7 @@ if selected == "citation graph":
  if dep == "Algebra":
     page4_6(dep2)
 
-if selected == "co-authorship graph":
+if selected == "Co-authorship graph":
  dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
