@@ -8,6 +8,34 @@ from streamlit_option_menu import option_menu
 import plotly.express as px
 import plotly.graph_objects as go
 from networkx.algorithms.community import greedy_modularity_communities
+import numpy as np
+
+def hide_anchor_link():
+    st.markdown(
+        body="""
+        <style>
+            h1 > div > a {
+                display: none;
+            }
+            h2 > div > a {
+                display: none;
+            }
+            h3 > div > a {
+                display: none;
+            }
+            h4 > div > a {
+                display: none;
+            }
+            h5 > div > a {
+                display: none;
+            }
+            h6 > div > a {
+                display: none;
+            }
+        </style>
+        """,
+         unsafe_allow_html=True,
+)
 def page1():
   max_year=2023
   figSize = (13,5)
@@ -74,8 +102,7 @@ def page3():
   list1=scores.sort_values(by=["ifScore"],ascending=False)
   df11=pd.read_csv('independentCitingPubCount.csv')
   list3=scores.sort_values(by=["citations"],ascending=False)
-  df1=pd.read_csv('publication.csv')
-  list4=df1.sort_values(by=["independentCitingPubCount"],ascending=False)
+  list4=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
   list6=scores.sort_values(by=["hIndex"],ascending=False)
   col1.table(list1[[ "Név","ifScore"]].head(10))
   col3.table(list3[[ "Név","citations"]].head(10))
@@ -83,11 +110,10 @@ def page3():
   col2.table(pubs[[ "év", "szerző","cím"]].head(10))
   col5.table(list6[[ "Név","hIndex"]].head(10))
 
-
 def load(x):
   pubs=x
-  pubs['citations'] = pubs['citations'] / 10
-  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
+  pubs['citations'] = np.log2(pubs['citations'])*np.log2(pubs['citations'])
+  pubs['hIndex'] = np.log2(pubs['hIndex'])*np.log2(pubs['hIndex'])*np.log2(pubs['hIndex'])
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -95,14 +121,14 @@ def load(x):
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
   relations_person=pd.read_csv('citation_graph.csv')
   pubs=pubs.rename(columns={"Név": "source"})
-  relations_person=pd.merge(relations_person[["source", "target"]], pubs[["source", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["source"])
+  relations_person=pd.merge(relations_person[["source", "target", "size"]], pubs[["source", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["source"])
   relations_person=relations_person.rename(columns={"color": "color1"})
   relations_person=relations_person.rename(columns={"pubCount": "pubCount1"})
   relations_person=relations_person.rename(columns={"ifCount": "ifCount1"})
   relations_person=relations_person.rename(columns={"citations": "citations1"})
   relations_person=relations_person.rename(columns={"hIndex": "hIndex1"})
   pubs=pubs.rename(columns={"source": "target"})
-  relations_person=pd.merge(relations_person[["source", "target","color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["target", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["target"])
+  relations_person=pd.merge(relations_person[["source", "target", "size","color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["target", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["target"])
 
 
   return relations_person
@@ -115,7 +141,9 @@ def draw(relations_person,dep2):
   color1 = relations_person['color1']
   valu = relations_person[dep2]
   valu1 = relations_person[dep2+"1"]
-  edge_data = zip(sources, targets,color,valu,color1,valu1)
+  relations_person['size'] = np.log2(relations_person['size'])*np.log2(relations_person['size'])
+  size_edge = relations_person["size"]
+  edge_data = zip(sources, targets,color,valu,color1,valu1,size_edge)
   for e in edge_data:
                 src = e[0]
                 dst = e[1]
@@ -123,12 +151,13 @@ def draw(relations_person,dep2):
                 val= e[3]
                 co1= e[4]
                 val1= e[5]
+                size_edge= e[6]
                 if dst=="0":
                   g1.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
                 else:
                   g1.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
                   g1.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
-                  g1.add_edge(src, dst, value=val, color=	"#838B8B",size=100)
+                  g1.add_edge(src, dst,  width=size_edge, color="#838B8B",size=100)
 
   g1.show('example.html')
   display(HTML('example.html'))
@@ -248,206 +277,134 @@ def page5():
 
 
 
-def load1(x,z):
+def load1(x,z,max_size,min_size):
   pubs=x
-  pubs['citations'] = pubs['citations'] / 10
-  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
+  pubs = pubs.loc[pubs['Tanszék'] == z]
+  pubs['citations'] = np.log2(pubs['citations']+1)*np.log2(pubs['citations']+1)
+  pubs['hIndex'] = np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
   pubs.loc[pubs["Tanszék"] == "Sztochasztika", "color"] = '#72B7B2'
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
-  df1=pd.read_csv('publication.csv')
-  df1=df1['authors'].str.split(',',expand=True)
-  for i in range(4):
-    y=pubs.rename(columns={"Név":i})
-    df1=pd.merge(df1, y[[i, "color","pubCount","ifCount", "citations", "hIndex",'Tanszék']], how='left',  on=[i])
-    df1=df1.rename(columns={"color": "color"+str(i)})
-    df1=df1.rename(columns={"pubCount": "pubCount"+str(i)})
-    df1=df1.rename(columns={"ifCount": "ifCount"+str(i)})
-    df1=df1.rename(columns={"citations": "citations"+str(i)})
-    df1=df1.rename(columns={"hIndex": "hIndex"+str(i)})
-    mask = df1["Tanszék"]==z
-    df1[i] = df1[i].where(mask, "0")
-    df1=df1.rename(columns={"Tanszék": "Tanszék"+str(i)})
-    df1 = df1.fillna("0")
-  return df1
-def load2(x):
+  relations_person=pd.read_csv('publication.csv')
+  relations_person = relations_person[ (relations_person['size'] <= max_size) & (relations_person['size'] >= min_size) ]
+  pubs=pubs.rename(columns={"Név": "auth1"})
+  relations_person=pd.merge(relations_person[["auth1", "auth2",'size']], pubs[["auth1", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth1"])
+  relations_person=relations_person.rename(columns={"color": "color1"})
+  relations_person=relations_person.rename(columns={"pubCount": "pubCount1"})
+  relations_person=relations_person.rename(columns={"ifCount": "ifCount1"})
+  relations_person=relations_person.rename(columns={"citations": "citations1"})
+  relations_person=relations_person.rename(columns={"hIndex": "hIndex1"})
+  pubs=pubs.rename(columns={"auth1": "auth2"})
+  relations_person=pd.merge(relations_person[["auth1", "auth2",'size',"color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["auth2", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth2"])
+
+
+  return relations_person
+def load2(x,max_size,min_size):
   pubs=x
-  pubs['citations'] = pubs['citations'] / 10
-  pubs['hIndex'] = (pubs['hIndex'] *pubs['hIndex'])/2
+  pubs['citations'] = np.log2(pubs['citations']+1)*np.log2(pubs['citations']+1)
+  pubs['hIndex'] = np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
   pubs.loc[pubs["Tanszék"] == "Sztochasztika", "color"] = '#72B7B2'
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
-  df1=pd.read_csv('publication.csv')
-  df1=df1['authors'].str.split(',',expand=True)
-  for i in range(4):
-    y=pubs.rename(columns={"Név":i})
-    df1=pd.merge(df1, y[[i, "color","pubCount","ifCount", "citations", "hIndex"]], how='left',  on=[i])
-    df1=df1.rename(columns={"color": "color"+str(i)})
-    df1=df1.rename(columns={"pubCount": "pubCount"+str(i)})
-    df1=df1.rename(columns={"ifCount": "ifCount"+str(i)})
-    df1=df1.rename(columns={"citations": "citations"+str(i)})
-    df1=df1.rename(columns={"hIndex": "hIndex"+str(i)})
-    df1 = df1.fillna("0")
-  return df1
-def draw1(relations_person,dep2):
+  relations_person=pd.read_csv('publication.csv')
+  relations_person = relations_person[ (relations_person['size'] <= max_size) & (relations_person['size'] >= min_size) ]
+  pubs=pubs.rename(columns={"Név": "auth1"})
+  relations_person=pd.merge(relations_person[["auth1", "auth2",'size']], pubs[["auth1", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth1"])
+  relations_person=relations_person.rename(columns={"color": "color1"})
+  relations_person=relations_person.rename(columns={"pubCount": "pubCount1"})
+  relations_person=relations_person.rename(columns={"ifCount": "ifCount1"})
+  relations_person=relations_person.rename(columns={"citations": "citations1"})
+  relations_person=relations_person.rename(columns={"hIndex": "hIndex1"})
+  pubs=pubs.rename(columns={"auth1": "auth2"})
+  relations_person=pd.merge(relations_person[["auth1", "auth2",'size',"color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["auth2", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth2"])
+
+  return relations_person
+def draw1(relations_person,dep2,min_size):
   g = Network(height='600px',notebook=True)
   g.barnes_hut()
-  x0 = relations_person[0]
-  x1 = relations_person[1]
-  x2 = relations_person[2]
-  x3 = relations_person[3]
-  color0 = relations_person['color0']
+  sources = relations_person['auth1']
+  targets = relations_person['auth2']
+  color = relations_person['color']
   color1 = relations_person['color1']
-  color2 = relations_person['color2']
-  color3 = relations_person['color3']
-  valu0 = relations_person[dep2+"0"]
+  valu = relations_person[dep2]
   valu1 = relations_person[dep2+"1"]
-  valu2 = relations_person[dep2+"2"]
-  valu3 = relations_person[dep2+"3"]
-  edge_data = zip(x0, x1, x2,x3,color0,color1,color2,color3,valu0,valu1,valu2,valu3)
+  size = relations_person["size"]
+  edge_data = zip(sources, targets,color,valu,color1,valu1,size)
   for e in edge_data:
-     x0 = e[0]
-     x1 = e[1]
-     x2 = e[2]
-     x3 = e[3]
-     color0 = e[4]
-     color1 = e[5]
-     color2 = e[6]
-     color3 = e[7]
-     valu0 = e[8]
-     valu1 = e[9]
-     valu2 = e[10]
-     valu3 = e[11]
-     if (x0 !="0")and(x1 !="0")and(x2 !="0")and(x3 !="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x0, x1, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x1, x2, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x2, x3, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x3, x0, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x0, x2, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x1, x3, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 !="0")and(x2 !="0")and(x3 =="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_edge(x0, x1, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x1, x2, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x0, x2, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 !="0")and(x2 =="0")and(x3 !="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x0, x1, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x3, x0, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x1, x3, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 !="0")and(x2 =="0")and(x3 =="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_edge(x0, x1, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 =="0")and(x2 !="0")and(x3 !="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x2, x3, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x3, x0, value=int(valu0), color="#838B8B",size=100)
-        g.add_edge(x0, x2, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 =="0")and(x2 !="0")and(x3 =="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_edge(x0, x2, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 =="0")and(x2 =="0")and(x3 !="0"):
-        g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x3, x0, value=int(valu0), color="#838B8B",size=100)
-     elif (x0 !="0")and(x1 =="0")and(x2 =="0")and(x3 =="0"):
-       g.add_node(x0, x0, color=color0,size=100+(int(valu0)+1),font="120px arial black")
-     elif (x0 =="0")and(x1 !="0")and(x2 !="0")and(x3 !="0"):
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x1, x2, value=int(valu1), color="#838B8B",size=100)
-        g.add_edge(x2, x3, value=int(valu1), color="#838B8B",size=100)
-        g.add_edge(x1, x3, value=int(valu1), color="#838B8B",size=100)
-     elif (x0 =="0")and(x1 !="0")and(x2 !="0")and(x3 =="0"):
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_edge(x1, x2, value=int(valu1), color="#838B8B",size=100)
-     elif (x0 =="0")and(x1 !="0")and(x2 =="0")and(x3 !="0"):
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x1, x3, value=int(valu1), color="#838B8B",size=100)
-     elif (x0 =="0")and(x1 !="0")and(x2 =="0")and(x3 =="0"):
-        g.add_node(x1, x1, color=color1,size=100+(int(valu1)+1)*2,font="120px arial black")
-
-     elif (x0 =="0")and(x1 =="0")and(x2 !="0")and(x3 !="0"):
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
-        g.add_edge(x2, x3, value=int(valu2), color="#838B8B",size=100)
-     elif (x0 =="0")and(x1 =="0")and(x2 !="0")and(x3 =="0"):
-        g.add_node(x2, x2, color=color2,size=100+(int(valu2)+1)*2,font="120px arial black")
-     elif (x0 =="0")and(x1 =="0")and(x2 =="0")and(x3 !="0"):
-        g.add_node(x3, x3, color=color3,size=100+(int(valu3)+1)*2,font="120px arial black")
+                src = e[0]
+                dst = e[1]
+                co = e[2]
+                val= e[3]
+                co1= e[4]
+                val1= e[5]
+                nbsize=e[6]
+                if (dst=="0")or(dst==src):
+                  if min_size==0:
+                     g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
+                else:
+                  g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                  g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                  g.add_edge(src, dst, width=nbsize, color=	"#838B8B",size=100)
 
   g.show('example2.html')
   display(HTML('example2.html'))
   HtmlFile = open("example2.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
   components.html(source_code, height = 2300,width=1650)
-def page6_1(dep2):
+def page6_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load2(pubs)
-    draw1(relations_person,dep2)
-def page6_2(dep2):
+    relations_person=load2(pubs,max_size,min_size)
+    draw1(relations_person,dep2,min_size)
+def page6_2(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load1(pubs, "Analízis")
-    draw1(relations_person,dep2)
-def page6_3(dep2):
+    relations_person=load1(pubs, "Analízis",max_size,min_size)
+    draw1(relations_person,dep2,min_size)
+def page6_3(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load1(pubs,"Geometria")
-    draw1(relations_person,dep2)
-def page6_4(dep2):
+    relations_person=load1(pubs,"Geometria",max_size,min_size)
+    draw1(relations_person,dep2,min_size)
+def page6_4(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load1(pubs,"Differenciálegyenletek")
-    draw1(relations_person,dep2)
-def page6_5(dep2):
+    relations_person=load1(pubs,"Differenciálegyenletek",max_size,min_size)
+    draw1(relations_person,dep2,min_size)
+def page6_5(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load1(pubs,"Sztochasztika")
-    draw1(relations_person,dep2)
-def page6_6(dep2):
+    relations_person=load1(pubs,"Sztochasztika",max_size,min_size)
+    draw1(relations_person,dep2,min_size)
+def page6_6(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
-    relations_person=load1(pubs,"Algebra")
-    draw1(relations_person,dep2)
-
-
-
-
-
+    relations_person=load1(pubs,"Algebra",max_size,min_size)
+    draw1(relations_person,dep2,min_size)
 
 
 
 
 st.set_page_config(page_title="My Streamlit App", page_icon=":guardsman:", layout="wide")
-st.markdown("# Research MTMT")
+st.markdown("""
+        <style>
+        .css-15zrgzn {display: none}
+        .css-eczf16 {display: none}
+        .css-jn99sy {display: none}
+        </style>
+        """, unsafe_allow_html=True)
 
+st.markdown("# Research MTMT")
 selected = option_menu(
     menu_title=None,
     options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
@@ -462,8 +419,8 @@ if selected == "Top results":
 if selected == "Department comparison":
   page5()
 if selected == "Citation graph":
- dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
- dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
+ dep = st.selectbox("Departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep2 = st.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
@@ -486,8 +443,11 @@ if selected == "Citation graph":
     page4_6(dep2)
 
 if selected == "Co-authorship graph":
- dep = st.selectbox("by departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
- dep2 = st.selectbox("size by", ["pubCount","ifCount", "citations", "hIndex"])
+ dep = st.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep2 = st.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
+ slider_range_size=st.slider("number of joint paper",0, 100,value=[1,100] ,key = "ag")
+ max_size = slider_range_size[1]
+ min_size = slider_range_size[0]
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
@@ -497,14 +457,14 @@ if selected == "Co-authorship graph":
  col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"Sztochasztika"}</h1>', unsafe_allow_html=True)
 
  if dep == "all":
-    page6_1(dep2)
+    page6_1(dep2,max_size,min_size)
  if dep == "Analízis":
-    page6_2(dep2)
+    page6_2(dep2,max_size,min_size)
  if dep == "Geometria":
-    page6_3(dep2)
+    page6_3(dep2,max_size,min_size)
  if dep == "Differenciálegyenletek":
-    page6_4(dep2)
+    page6_4(dep2,max_size,min_size)
  if dep == "Sztochasztika":
-    page6_5(dep2)
+    page6_5(dep2,max_size,min_size)
  if dep == "Algebra":
-    page6_6(dep2)
+    page6_6(dep2,max_size,min_size)
