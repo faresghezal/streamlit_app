@@ -288,7 +288,6 @@ def load1(x,z,max_size,min_size):
   pubs.loc[pubs["Tanszék"] == "Sztochasztika", "color"] = '#72B7B2'
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
   relations_person=pd.read_csv('publication.csv')
-  relations_person = relations_person[ (relations_person['size'] <= max_size) & (relations_person['size'] >= min_size) ]
   pubs=pubs.rename(columns={"Név": "auth1"})
   relations_person=pd.merge(relations_person[["auth1", "auth2",'size']], pubs[["auth1", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth1"])
   relations_person=relations_person.rename(columns={"color": "color1"})
@@ -311,7 +310,6 @@ def load2(x,max_size,min_size):
   pubs.loc[pubs["Tanszék"] == "Sztochasztika", "color"] = '#72B7B2'
   pubs.loc[pubs["Tanszék"] == "Algebra", "color"] = '#EECA3B'
   relations_person=pd.read_csv('publication.csv')
-  relations_person = relations_person[ (relations_person['size'] <= max_size) & (relations_person['size'] >= min_size) ]
   pubs=pubs.rename(columns={"Név": "auth1"})
   relations_person=pd.merge(relations_person[["auth1", "auth2",'size']], pubs[["auth1", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth1"])
   relations_person=relations_person.rename(columns={"color": "color1"})
@@ -323,7 +321,7 @@ def load2(x,max_size,min_size):
   relations_person=pd.merge(relations_person[["auth1", "auth2",'size',"color1","pubCount1","ifCount1","citations1","hIndex1"]], pubs[["auth2", "color","pubCount","ifCount", "citations", "hIndex"]], how='inner',  on=["auth2"])
 
   return relations_person
-def draw1(relations_person,dep2,min_size):
+def draw1(relations_person,dep2,max_size,min_size):
   g = Network(height='600px',notebook=True)
   g.barnes_hut()
   sources = relations_person['auth1']
@@ -343,12 +341,15 @@ def draw1(relations_person,dep2,min_size):
                 val1= e[5]
                 nbsize=e[6]
                 if (dst=="0")or(dst==src):
-                  if min_size==0:
-                     g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
+                  g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
                 else:
-                  g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
-                  g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
-                  g.add_edge(src, dst, width=nbsize, color=	"#838B8B",size=100)
+                  if (nbsize<min_size)or(nbsize>max_size):
+                     g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                     g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                  else:
+                      g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                      g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                      g.add_edge(src, dst, width=nbsize, color=	"#838B8B",size=100)
 
   g.show('example2.html')
   display(HTML('example2.html'))
@@ -360,37 +361,37 @@ def page6_1(dep2,max_size,min_size):
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load2(pubs,max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 def page6_2(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load1(pubs, "Analízis",max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 def page6_3(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load1(pubs,"Geometria",max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 def page6_4(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load1(pubs,"Differenciálegyenletek",max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 def page6_5(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load1(pubs,"Sztochasztika",max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 def page6_6(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load1(pubs,"Algebra",max_size,min_size)
-    draw1(relations_person,dep2,min_size)
+    draw1(relations_person,dep2,max_size,min_size)
 
 
 
@@ -445,7 +446,7 @@ if selected == "Citation graph":
 if selected == "Co-authorship graph":
  dep = st.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
- slider_range_size=st.slider("number of joint paper",0, 100,value=[1,100] ,key = "ag")
+ slider_range_size=st.slider("number of joint paper",1, 40,value=[1,40] ,key = "ag")
  max_size = slider_range_size[1]
  min_size = slider_range_size[0]
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
