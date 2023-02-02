@@ -112,8 +112,8 @@ def page3():
 
 def load(x):
   pubs=x
-  pubs['citations'] = np.log2(pubs['citations'])*np.log2(pubs['citations'])
-  pubs['hIndex'] = np.log2(pubs['hIndex'])*np.log2(pubs['hIndex'])*np.log2(pubs['hIndex'])
+  pubs['citations'] = np.log2(pubs['citations']+1)*np.log2(pubs['citations']+1)
+  pubs['hIndex'] = np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)*np.log2(pubs['hIndex']+1)
   pubs.loc[pubs["Tanszék"] == "Analízis", "color"] = '#4C78A8'
   pubs.loc[pubs["Tanszék"] == "Geometria", "color"] = '#F58518'
   pubs.loc[pubs["Tanszék"] == "Differenciálegyenletek", "color"] = '#E45756'
@@ -340,16 +340,29 @@ def draw1(relations_person,dep2,max_size,min_size):
                 co1= e[4]
                 val1= e[5]
                 nbsize=e[6]
-                if (dst=="0")or(dst==src):
-                  g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
-                else:
-                  if (nbsize<min_size)or(nbsize>max_size):
-                     g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
-                     g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
-                  else:
+                if (src!=0)and(src!="0"):
+                  if (dst!=0)and(dst!="0"):
+                    if (src!=dst) :
+                     if (nbsize<min_size)or(nbsize>max_size):
+                      g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                      g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                     else:
                       g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
                       g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
                       g.add_edge(src, dst, width=nbsize, color=	"#838B8B",size=100)
+                if (src==dst)and(src!="0") :
+                  g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
+                if (src!=dst)and(src!="0") :
+                  g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
+                if (src!=dst)and(dst!="0") :
+                  g.add_node(dst, dst, color=co,size=100+(val+1),font="120px arial black")
+
+
+
+
+
+               
+
 
   g.show('example2.html')
   display(HTML('example2.html'))
