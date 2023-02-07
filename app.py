@@ -36,7 +36,20 @@ def hide_anchor_link():
         """,
          unsafe_allow_html=True,
 )
-def page1():
+def page1():  
+  selected2 = option_menu(
+    menu_title=None,
+    options=["by departement","by authors"],
+    icons=["house", "mortarboard-fill"], 
+    orientation="horizontal",
+  )
+  if selected2 == "by departement":
+     pubs=pd.read_csv("mtmt-faculty-yearly.csv")
+  if selected2 == "by authors":
+     pubs=pd.read_csv("mtmt-faculty-yearly_authors.csv") 
+  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
+  st.text('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
+  st.text('-By selecting the departement we take unto account the work done in departement regardless of authors.')
   max_year=2023
   figSize = (13,5)
   col1, col2 = st.columns(2)
@@ -49,7 +62,6 @@ def page1():
   col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75%.")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
-  pubs=pd.read_csv("mtmt-faculty-yearly.csv")
   pubs = pubs.reset_index()
   fig = px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
   col1.plotly_chart(fig, use_container_width=True)
@@ -67,6 +79,23 @@ def page1():
   col4.plotly_chart(fig, use_container_width=True)
 
 def page3():
+  selected2 = option_menu(
+    menu_title=None,
+    options=["with affiliation","without affiliation"],
+    icons=["house","mortarboard-fill"], 
+    orientation="horizontal",
+  )
+  if selected2 == "with affiliation":
+     scores=pd.read_csv('people_affiliation.csv')
+     df=pd.read_csv('percentille_affiliation.csv')
+     df11=pd.read_csv('independentCitingPubCountaffiliation.csv')
+  if selected2 == "without affiliation":
+     scores=pd.read_csv('people_no affiliation.csv')
+     df=pd.read_csv('percentille_no_affiliation.csv')
+     df11=pd.read_csv('independentCitingPubCountnoaffiliation.csv')
+  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the affiliation of the authors:  ')
+  st.text('-By selecting the with affiliation we take unto account the work of various reserchers done in collaboration with the departement. ')
+  st.text('-By selecting the departement we take unto account the work done by authors including theirs in different positions.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col5, col6 = st.columns(2)
@@ -79,28 +108,21 @@ def page3():
 
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
   col1.subheader("Authors with top impact ")
-
   col3.subheader("The most cited authors")
   col4.subheader("The most cited publications")
-
-
   col2.subheader("Most influential publications")
   col5.subheader("Researchers with top H index")
   col1.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
   col3.write("Based on the number of citations according to  MTMT portal, the most cited authors of the faculty are as follows (one author is counted only once).")
   col4.write("Based on the number of citations according to MTMT portal , the most cited publications of the faculty are as follows (one author is counted only once).")
-
   col2.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
   col5.write("The list of the researchers having the highest H index are as follows.")
   people=pd.read_csv('people_flt.csv')
-  scores=pd.read_csv('node_person.csv')
-  df=pd.read_csv('percentille.csv')
   df["cím"] = df["cím"].str.lower()
   df["cím"] = df["cím"].str.capitalize()
   pubs=df[df["1.00%"]>0]
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
   list1=scores.sort_values(by=["ifScore"],ascending=False)
-  df11=pd.read_csv('independentCitingPubCount.csv')
   list3=scores.sort_values(by=["citations"],ascending=False)
   list4=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
   list6=scores.sort_values(by=["hIndex"],ascending=False)
@@ -132,7 +154,7 @@ def load(x):
 
 
   return relations_person
-def draw(relations_person,dep2):
+def draw(relations_person,dep2,max_size,min_size):
   g1 = Network(height='600px',notebook=True,directed =True)
   g1.barnes_hut()
   sources = relations_person['source']
@@ -145,8 +167,8 @@ def draw(relations_person,dep2):
   size_edge = relations_person["size"]
   edge_data = zip(sources, targets,color,valu,color1,valu1,size_edge)
   for e in edge_data:
-                src = e[0]
-                dst = e[1]
+                src = e[1]
+                dst = e[0]
                 co = e[2]
                 val= e[3]
                 co1= e[4]
@@ -155,61 +177,76 @@ def draw(relations_person,dep2):
                 if dst=="0":
                   g1.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
                 else:
-                  g1.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
-                  g1.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
-                  g1.add_edge(src, dst,  width=size_edge, color="#838B8B",size=100)
+                  if (size_edge<min_size)or(size_edge>max_size):
+                     g1.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                     g1.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                  else:
+                      g1.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
+                      g1.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
+                      g1.add_edge(src, dst,  width=size_edge, color="#838B8B",size=100)
 
   g1.show('example.html')
   display(HTML('example.html'))
   HtmlFile = open("example.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
   components.html(source_code, height = 2300,width=1650)
-def page4_1(dep2):
+def page4_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
-    draw(relations_person,dep2)
-def page4_2(dep2):
+    draw(relations_person,dep2,max_size,min_size)
+def page4_2(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Analízis"]
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
-    draw(relations_person,dep2)
-def page4_3(dep2):
+    draw(relations_person,dep2,max_size,min_size)
+def page4_3(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Geometria"]
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
 
     relations_person=load(pubs)
-    draw(relations_person,dep2)
-def page4_4(dep2):
+    draw(relations_person,dep2,max_size,min_size)
+def page4_4(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Differenciálegyenletek"]
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
-    draw(relations_person,dep2)
-def page4_5(dep2):
+    draw(relations_person,dep2,max_size,min_size)
+def page4_5(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Sztochasztika"]
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
-    draw(relations_person,dep2)
-def page4_6(dep2):
+    draw(relations_person,dep2,max_size,min_size)
+def page4_6(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     pubs = pubs.loc[pubs['Tanszék'] == "Algebra"]
     node=pd.read_csv('node_person.csv')
     pubs=pd.merge(node[["MTMT", "pubCount","ifCount", "citations", "hIndex"]], pubs[["MTMT", "Név","Tanszék"]], how='inner',  on=["MTMT"])
     relations_person=load(pubs)
-    draw(relations_person,dep2)
+    draw(relations_person,dep2,max_size,min_size)
 
 def page5():
-  max_year=2023
-  figSize = (13,5)
+  selected2 = option_menu(
+    menu_title=None,
+    options=["by departement","by authors"],
+    icons=["house", "mortarboard-fill"], 
+    orientation="horizontal",
+  )
+  if selected2 == "by departement":
+     pubs=pd.read_csv("mtmt-yearly1.csv")
+  if selected2 == "by authors":
+     pubs=pd.read_csv("mtmt-yearly1_authors.csv")
+  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
+  st.text('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
+  st.text('-By selecting the departement we take unto account the work done in departement regardless of authors.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col1.subheader("Number of publications")
@@ -220,7 +257,6 @@ def page5():
   col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75% .")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
-  pubs=pd.read_csv("mtmt-yearly1.csv")
   a=pubs[pubs['Tanszék'] == "ANALYSIS"]
   b=pubs[pubs['Tanszék'] == "ALGEBRA"]
   c=pubs[pubs['Tanszék'] == "Geometry"]
@@ -235,9 +271,6 @@ def page5():
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
   col1.plotly_chart(fig, use_container_width=True)
-
-
-
   slider_range2=col2.slider("year interval",2003, 2022,value=[2005,2020] ,key = "ab")
   maxYear2 = slider_range2[1]
   minYear2 = slider_range2[0]
@@ -247,11 +280,6 @@ def page5():
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
-
-
-
-
-
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig = go.Figure(data=[
     go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["Év"], y=a["I pontszám"]),
@@ -261,10 +289,6 @@ def page5():
     go.Bar(name='Stochastics',opacity=0.8,marker_color='#54A24B', x=pubs["Év"], y= e["I pontszám"])
   ])
   col3.plotly_chart(fig, use_container_width=True)
-
-
-
-
   fig = go.Figure(data=[
     go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["Év"], y=a["Normalizált IF"]),
     go.Bar(name='Algebra',opacity=0.8,marker_color='#F58518', x=pubs["Év"], y=b["Normalizált IF"]),
@@ -349,7 +373,7 @@ def draw1(relations_person,dep2,max_size,min_size):
                      else:
                       g.add_node(src, src, color=co1,size=100+(val1+1)*2,font="120px arial black")
                       g.add_node(dst, dst,  color=co,size=100+(val+1)*2,font="120px arial black")
-                      g.add_edge(src, dst, width=nbsize, color=	"#838B8B",size=100)
+                      g.add_edge(src, dst, width=(nbsize*10), color=	"#838B8B",size=100)
                 if (src==dst)and(src!="0") :
                   g.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
                 if (src!=dst)and(src!="0") :
@@ -422,7 +446,7 @@ st.markdown("# Research MTMT")
 selected = option_menu(
     menu_title=None,
     options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
-    icons=["pencil-fill", "bar-chart-fill"], 
+    icons=["bar-chart-fill", "bar-chart-fill", "list-task", "bounding-box-circles", "bounding-box-circles"], 
     orientation="horizontal",
 )
 if selected == "Publications":
@@ -435,6 +459,9 @@ if selected == "Department comparison":
 if selected == "Citation graph":
  dep = st.selectbox("Departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
  dep2 = st.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
+ slider_range_size=st.slider("number of citation",1, 40,value=[1,80] ,key = "ad")
+ max_size = slider_range_size[1]
+ min_size = slider_range_size[0]
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
@@ -444,17 +471,17 @@ if selected == "Citation graph":
  col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"Sztochasztika"}</h1>', unsafe_allow_html=True)
 
  if dep == "all":
-    page4_1(dep2)
+    page4_1(dep2,max_size,min_size)
  if dep == "Analízis":
-    page4_2(dep2)
+    page4_2(dep2,max_size,min_size)
  if dep == "Geometria":
-    page4_3(dep2)
+    page4_3(dep2,max_size,min_size)
  if dep == "Differenciálegyenletek":
-    page4_4(dep2)
+    page4_4(dep2,max_size,min_size)
  if dep == "Sztochasztika":
-    page4_5(dep2)
+    page4_5(dep2,max_size,min_size)
  if dep == "Algebra":
-    page4_6(dep2)
+    page4_6(dep2,max_size,min_size)
 
 if selected == "Co-authorship graph":
  dep = st.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
