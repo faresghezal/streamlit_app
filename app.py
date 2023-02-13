@@ -136,7 +136,7 @@ def page3():
   list6=scores.sort_values(by=["hIndex"],ascending=False)
   col1.table(list1[[ "Név","ifScore"]].head(10))
   col3.table(list3[[ "Név","citations"]].head(10))
-  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount','cit_year']].head(10))
+  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
   col2.table(pubs[[ "év", "szerző","cím"]].head(10))
   col5.table(list6[[ "Név","hIndex"]].head(10))
 
