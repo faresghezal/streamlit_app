@@ -85,14 +85,20 @@ def page3():
     icons=["house","mortarboard-fill"], 
     orientation="horizontal",
   )
+  colauth, colcit = st.columns(2)
+  pub_year = colauth.slider('publication year', 1990, 2023, 1990,key = "auth")
+  cit_year = colcit.slider('citation year', pub_year, 2023, pub_year,key = "cit")
   if selected2 == "with affiliation":
-     scores=pd.read_csv('people_affiliation.csv')
+     scores=pd.read_csv('big_aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
-     df11=pd.read_csv('independentCitingPubCountaffiliation.csv')
+     df11=pd.read_csv('pub_aff.csv')
   if selected2 == "without affiliation":
-     scores=pd.read_csv('people_no affiliation.csv')
-     df=pd.read_csv('percentille_no_affiliation.csv')
-     df11=pd.read_csv('independentCitingPubCountnoaffiliation.csv')
+     scores=pd.read_csv('big_no aff.csv')
+     df=pd.read_csv('percentille_affiliation.csv')
+     df11=pd.read_csv('pub_no_aff.csv')
+  df11 = df11[df11['publishedYear'] >=pub_year]
+  df11 = df11[df11['cit_year'] >=cit_year]  
+  df11 = df11.drop_duplicates(subset=['name'])
   st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the affiliation of the authors:  ')
   st.text('-By selecting the with affiliation we take unto account the work of various reserchers done in collaboration with the departement. ')
   st.text('-By selecting the departement we take unto account the work done by authors including theirs in different positions.')
@@ -105,7 +111,8 @@ def page3():
             tbody th {display:none}
             </style>
             """
-
+  scores = scores[scores['auth_year'] ==pub_year]
+  scores = scores[scores['cit_year'] ==cit_year]
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
   col1.subheader("Authors with top impact ")
   col3.subheader("The most cited authors")
@@ -120,6 +127,7 @@ def page3():
   people=pd.read_csv('people_flt.csv')
   df["cím"] = df["cím"].str.lower()
   df["cím"] = df["cím"].str.capitalize()
+  df = df[df['év'] >=pub_year]
   pubs=df[df["1.00%"]>0]
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
   list1=scores.sort_values(by=["ifScore"],ascending=False)
@@ -128,7 +136,7 @@ def page3():
   list6=scores.sort_values(by=["hIndex"],ascending=False)
   col1.table(list1[[ "Név","ifScore"]].head(10))
   col3.table(list3[[ "Név","citations"]].head(10))
-  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
+  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount','cit_year']].head(10))
   col2.table(pubs[[ "év", "szerző","cím"]].head(10))
   col5.table(list6[[ "Név","hIndex"]].head(10))
 
@@ -509,3 +517,4 @@ if selected == "Co-authorship graph":
     page6_5(dep2,max_size,min_size)
  if dep == "Algebra":
     page6_6(dep2,max_size,min_size)
+    
