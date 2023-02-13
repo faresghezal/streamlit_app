@@ -177,10 +177,10 @@ def draw(relations_person,dep2,max_size,min_size):
   for e in edge_data:
                 src = e[1]
                 dst = e[0]
-                co = e[2]
-                val= e[3]
-                co1= e[4]
-                val1= e[5]
+                co = e[4]
+                val= e[5]
+                co1= e[2]
+                val1= e[3]
                 size_edge= e[6]
                 if dst=="0":
                   g1.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
