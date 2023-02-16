@@ -39,17 +39,17 @@ def hide_anchor_link():
 def page1():  
   selected2 = option_menu(
     menu_title=None,
-    options=["by departement","by authors"],
+    options=["Pubs. by Institute of Mathematics","Pubs. by current researchers"],
     icons=["house", "mortarboard-fill"], 
     orientation="horizontal",
   )
-  if selected2 == "by departement":
+  if selected2 == "Pubs. by Institute of Mathematics":
      pubs=pd.read_csv("mtmt-faculty-yearly.csv")
-  if selected2 == "by authors":
+  if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-faculty-yearly_authors.csv") 
-  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
-  st.text('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
-  st.text('-By selecting the departement we take unto account the work done in departement regardless of authors.')
+  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
+  st.markdown('-By selecting the departement we take unto account the work done in departement regardless of authors.')
   max_year=2023
   figSize = (13,5)
   col1, col2 = st.columns(2)
@@ -81,27 +81,27 @@ def page1():
 def page3():
   selected2 = option_menu(
     menu_title=None,
-    options=["with affiliation","without affiliation"],
+    options=["Affiliated with BME MI","Regardless of the affiliation"],
     icons=["house","mortarboard-fill"], 
     orientation="horizontal",
   )
   colauth, colcit = st.columns(2)
   pub_year = colauth.slider('publication year', 1990, 2023, 1990,key = "auth")
   cit_year = colcit.slider('citation year', pub_year, 2023, pub_year,key = "cit")
-  if selected2 == "with affiliation":
+  if selected2 == "Affiliated with BME MI":
      scores=pd.read_csv('big_aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
      df11=pd.read_csv('pub_aff.csv')
-  if selected2 == "without affiliation":
+  if selected2 == "Regardless of the affiliation":
      scores=pd.read_csv('big_no aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
      df11=pd.read_csv('pub_no_aff.csv')
   df11 = df11[df11['publishedYear'] >=pub_year]
   df11 = df11[df11['cit_year'] >=cit_year]  
   df11 = df11.drop_duplicates(subset=['name'])
-  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the affiliation of the authors:  ')
-  st.text('-By selecting the with affiliation we take unto account the work of various reserchers done in collaboration with the departement. ')
-  st.text('-By selecting the departement we take unto account the work done by authors including theirs in different positions.')
+  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the affiliation of the authors:  ')
+  st.markdown('-By selecting the with affiliation we take unto account the work of various reserchers done in collaboration with the departement. ')
+  st.markdown('-By selecting the departement we take unto account the work done by authors including theirs in different positions.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col5, col6 = st.columns(2)
@@ -197,7 +197,8 @@ def draw(relations_person,dep2,max_size,min_size):
   display(HTML('example.html'))
   HtmlFile = open("example.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
-  components.html(source_code, height = 2300,width=1650)
+  with col00:
+       components.html(source_code, height = 2300)
 def page4_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
@@ -244,17 +245,17 @@ def page4_6(dep2,max_size,min_size):
 def page5():
   selected2 = option_menu(
     menu_title=None,
-    options=["by departement","by authors"],
+    options=["Pubs. by Institute of Mathematics","Pubs. by current researchers"],
     icons=["house", "mortarboard-fill"], 
     orientation="horizontal",
   )
-  if selected2 == "by departement":
+  if selected2 == "Pubs. by Institute of Mathematics":
      pubs=pd.read_csv("mtmt-yearly1.csv")
-  if selected2 == "by authors":
+  if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-yearly1_authors.csv")
-  st.text('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
-  st.text('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
-  st.text('-By selecting the departement we take unto account the work done in departement regardless of authors.')
+  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
+  st.markdown('-By selecting the departement we take unto account the work done in departement regardless of authors.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col1.subheader("Number of publications")
@@ -390,17 +391,12 @@ def draw1(relations_person,dep2,max_size,min_size):
                   g.add_node(dst, dst, color=co,size=100+(val+1),font="120px arial black")
 
 
-
-
-
-               
-
-
   g.show('example2.html')
   display(HTML('example2.html'))
   HtmlFile = open("example2.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
-  components.html(source_code, height = 2300,width=1650)
+  with col00:
+       components.html(source_code, height = 2300)
 def page6_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
@@ -465,12 +461,13 @@ if selected == "Top results":
 if selected == "Department comparison":
   page5()
 if selected == "Citation graph":
- dep = st.selectbox("Departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
- dep2 = st.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
- slider_range_size=st.slider("number of citation",1, 40,value=[1,80] ,key = "ad")
+ col0,col1, col2 ,col3, col4,col5= st.columns(6)
+ col01,col00= st.columns([1, 5])
+ dep = col01.selectbox("Departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep2 = col01.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
+ slider_range_size=col01.slider("number of citation",1, 40,value=[1,80] ,key = "ad")
  max_size = slider_range_size[1]
  min_size = slider_range_size[0]
- col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
  col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"Algebra"}</h1>', unsafe_allow_html=True)
@@ -492,12 +489,13 @@ if selected == "Citation graph":
     page4_6(dep2,max_size,min_size)
 
 if selected == "Co-authorship graph":
- dep = st.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
- dep2 = st.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
- slider_range_size=st.slider("number of joint paper",1, 40,value=[1,40] ,key = "ag")
+ col0,col1, col2 ,col3, col4,col5= st.columns(6)
+ col01,col00= st.columns([1, 5])
+ dep = col01.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep2 = col01.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
+ slider_range_size=col01.slider("number of joint paper",1, 40,value=[1,40] ,key = "ag")
  max_size = slider_range_size[1]
  min_size = slider_range_size[0]
- col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
  col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"Algebra"}</h1>', unsafe_allow_html=True)
