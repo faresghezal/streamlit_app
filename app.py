@@ -85,9 +85,11 @@ def page3():
     icons=["house","mortarboard-fill"], 
     orientation="horizontal",
   )
+
   colauth, colcit = st.columns(2)
-  pub_year = colauth.slider('publication year', 1990, 2023, 1990,key = "auth")
-  cit_year = colcit.slider('citation year', pub_year, 2023, pub_year,key = "cit")
+  pub_year = colauth.select_slider('publication year',options=[*reversed(range(1990,2024))] ,value=(1990))
+  cit_year = colcit.select_slider('citation year',options=[*reversed(range(pub_year,2024))],value=(pub_year))
+  
   if selected2 == "Affiliated with BME MI":
      scores=pd.read_csv('big_aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
