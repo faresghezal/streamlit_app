@@ -81,7 +81,7 @@ def page1():
 def page3():
   selected2 = option_menu(
     menu_title=None,
-    options=["Affiliated with BME MI","Regardless of the affiliation"],
+    options=["Current researchers with works affiliated with BME MI","Current researchers regardless of affiliation"],
     icons=["house","mortarboard-fill"], 
     orientation="horizontal",
   )
@@ -90,11 +90,11 @@ def page3():
   pub_year = colauth.select_slider('publication year',options=[*reversed(range(1990,2024))] ,value=(1990))
   cit_year = colcit.select_slider('citation year',options=[*reversed(range(pub_year,2024))],value=(pub_year))
   
-  if selected2 == "Affiliated with BME MI":
+  if selected2 == "Current researchers with works affiliated with BME MI":
      scores=pd.read_csv('big_aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
      df11=pd.read_csv('pub_aff.csv')
-  if selected2 == "Regardless of the affiliation":
+  if selected2 == "Current researchers regardless of affiliation":
      scores=pd.read_csv('big_no aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
      df11=pd.read_csv('pub_no_aff.csv')
