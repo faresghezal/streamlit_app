@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from networkx.algorithms.community import greedy_modularity_communities
 import numpy as np
 from PIL import Image
+import base64
 def hide_anchor_link():
     st.markdown(
         body="""
@@ -47,9 +48,9 @@ def page1():
      pubs=pd.read_csv("mtmt-faculty-yearly.csv")
   if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-faculty-yearly_authors.csv") 
-  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
-  st.markdown('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
-  st.markdown('-By selecting the departement we take unto account the work done in departement regardless of authors.')
+  st.markdown('The data is extracted from the MTMT website([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting  "Pubs. by Institute of Mathematics", We take into account the work done in departement regardless of authors.')
+  st.markdown('-By selecting  "Pubs. by current researchers", We take into account the work of various reserchers currently affiliated with the department. This approache may include works done with previous affiliation. ')
   max_year=2023
   figSize = (13,5)
   col1, col2 = st.columns(2)
@@ -58,22 +59,29 @@ def page1():
   col2.subheader("Rank of journal publications")
   col3.subheader("Citations")
   col4.subheader("Impact factor")
-  col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories, based on data from MTMT.")
-  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75%.")
+  col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories.")
+  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the quartiles.")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
   pubs = pubs.reset_index()
-  fig = px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  pubs.rename(columns={"Év": "year"}, inplace=True)
+  pubs.rename(columns={"Konferenciacikkek száma": "Conference paper"}, inplace=True)
+  pubs.rename(columns={"Könyv és könyvfejezet": "Book and book chaptes"}, inplace=True)
+  pubs.rename(columns={"Lektorált folyóiratok száma": "Journal paper"}, inplace=True)
+  pubs.rename(columns={"Szabadalom": "Patent"}, inplace=True)
+  pubs.rename(columns={"I pontszám": "Citation"}, inplace=True)
+
+  fig = px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["Conference paper", "Book and book chaptes", "Journal paper", "Patent"])
   col1.plotly_chart(fig, use_container_width=True)
-  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
-  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Év", y=["I pontszám"])
+  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["Citation"])
   col3.plotly_chart(fig, use_container_width=True)
   fig = go.Figure(data=[
-    go.Bar(name='IF',opacity=0.8,marker_color='#4C78A8', x=pubs["Év"], y=pubs["IF"]),
-    go.Bar(name='Normalizált IF',opacity=0.8,marker_color='#F58518', x=pubs["Év"], y=pubs["Normalizált IF"]),
-    go.Bar(name='IF folyóiratok száma',opacity=0.8,marker_color='#E45756', x=pubs["Év"], y= pubs["IF folyóiratok száma"])
+    go.Bar(name='IF',opacity=0.8,marker_color='#4C78A8', x=pubs["year"], y=pubs["IF"]),
+    go.Bar(name='normalized IF',opacity=0.8,marker_color='#F58518', x=pubs["year"], y=pubs["Normalizált IF"]),
+    go.Bar(name=' Journal IF',opacity=0.8,marker_color='#E45756', x=pubs["year"], y= pubs["IF folyóiratok száma"])
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
@@ -87,9 +95,12 @@ def page3():
   )
 
   colauth, colcit = st.columns(2)
+  colauth.write("Please select the years in which the publications are to be included in the calculations.")
   pub_year = colauth.select_slider('publication year',options=[*reversed(range(1990,2024))] ,value=(1990))
+  colcit.write("Please select the years whose citations should be included in the calculations.")
   cit_year = colcit.select_slider('citation year',options=[*reversed(range(pub_year,2024))],value=(pub_year))
-  
+  st.write("Of course, the citation range under consideration should not start before the publication range under consideration.") 
+  st.write("Please note that the year on the slider decreases from left to right!") 
   if selected2 == "Current researchers with works affiliated with BME MI":
      scores=pd.read_csv('big_aff.csv')
      df=pd.read_csv('percentille_affiliation.csv')
@@ -101,9 +112,9 @@ def page3():
   df11 = df11[df11['publishedYear'] >=pub_year]
   df11 = df11[df11['cit_year'] >=cit_year]  
   df11 = df11.drop_duplicates(subset=['name'])
-  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the affiliation of the authors:  ')
-  st.markdown('-By selecting the with affiliation we take unto account the work of various reserchers done in collaboration with the departement. ')
-  st.markdown('-By selecting the departement we take unto account the work done by authors including theirs in different positions.')
+  st.markdown('The data is extracted from the MTMT website([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the affiliation of the authors:  ')
+  st.markdown('-By selecting the with affiliation, We take into account the work of various reserchers done in collaboration with the departement. ')
+  st.markdown('-By selecting the departement, We take into account the work done by authors including theirs in different positions.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col5, col6 = st.columns(2)
@@ -116,14 +127,14 @@ def page3():
   scores = scores[scores['auth_year'] ==pub_year]
   scores = scores[scores['cit_year'] ==cit_year]
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
-  col3.subheader("Authors with top impact ")
   col1.subheader("The most cited authors")
   col2.subheader("The most cited publications")
+  col3.subheader("Authors with top impact ")
   col4.subheader("Most influential publications")
   col5.subheader("Researchers with top H index")
-  col3.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
-  col1.write("Based on the number of citations according to  MTMT portal, the most cited authors of the faculty are as follows (one author is counted only once).")
-  col2.write("Based on the number of citations according to MTMT portal , the most cited publications of the faculty are as follows (one author is counted only once).")
+  col1.write("Based on the number of citations according to  MTMT portal, The most cited authors of the faculty are as follows.")
+  col2.write("Based on the number of citations according to MTMT portal , The most cited publications of the faculty are as follows.")
+  col3.write("The authors of the faculty having the highest impact factor are as follows.")
   col4.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
   col5.write("The list of the researchers having the highest H index are as follows.")
 
@@ -134,15 +145,19 @@ def page3():
   df = df[df['év'] >=pub_year]
   pubs=df[df["1.00%"]>0]
   scores=pd.merge(scores, people[["MTMT", "Név", "Web"]], how='inner',  on=["MTMT"])
+  scores.rename(columns={"Név": "name"}, inplace=True)
+  pubs.rename(columns={"év": "year"}, inplace=True)
+  pubs.rename(columns={"szerző": "author"}, inplace=True)
+  pubs.rename(columns={"cím": "publications"}, inplace=True)
   list1=scores.sort_values(by=["ifScore"],ascending=False)
-  list3=scores.sort_values(by=["citations"],ascending=False)
-  list4=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
-  list6=scores.sort_values(by=["hIndex"],ascending=False)
-  col3.table(list1[[ "Név","ifScore"]].head(10))
-  col1.table(list3[[ "Név","citations"]].head(10))
-  col2.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
-  col4.table(pubs[[ "év", "szerző","cím"]].head(10))
-  col5.table(list6[[ "Név","hIndex"]].head(10))
+  list2=scores.sort_values(by=["citations"],ascending=False)
+  list3=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
+  list4=scores.sort_values(by=["hIndex"],ascending=False)
+  col1.table(list2[[ "name","citations"]].head(10))
+  col2.table(list3[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
+  col3.table(list1[[ "name","ifScore"]].head(10))
+  col4.table(pubs[[ "year", "author","publications"]].head(10))
+  col5.table(list4[[ "name","hIndex"]].head(10))
 
 def load(x):
   pubs=x
@@ -179,12 +194,12 @@ def draw(relations_person,dep2,max_size,min_size):
   size_edge = relations_person["size"]
   edge_data = zip(sources, targets,color,valu,color1,valu1,size_edge)
   for e in edge_data:
-                src = e[1]
                 dst = e[0]
-                co = e[4]
-                val= e[5]
+                src = e[1]
                 co1= e[2]
                 val1= e[3]
+                co = e[4]
+                val= e[5]
                 size_edge= e[6]
                 if dst=="0":
                   g1.add_node(src, src, color=co1,size=100+(val1+1),font="120px arial black")
@@ -202,7 +217,7 @@ def draw(relations_person,dep2,max_size,min_size):
   HtmlFile = open("example.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
   with col00:
-       components.html(source_code, height = 2300)
+       components.html(source_code, height = 700)
 def page4_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
@@ -257,57 +272,68 @@ def page5():
      pubs=pd.read_csv("mtmt-yearly1.csv")
   if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-yearly1_authors.csv")
-  st.markdown('The data is extracted from the MTMT website.there are various criteria to consider.As such we provide the choice to take unto account the departement or the authors for the various graphs:  ')
-  st.markdown('-By selecting the authors we take unto account the work of various reserchers currently affiliated with the department.This approache may include works done with previous affiliation. ')
-  st.markdown('-By selecting the departement we take unto account the work done in departement regardless of authors.')
+  st.markdown('The data is extracted from the MTMT website ([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting "Pubs. by Institute of Mathematics", We take into account the work done in departement regardless of authors.')
+  st.markdown('-By selecting "Pubs. by current researchers", We take into account the work of various reserchers currently affiliated with the department. This approache may include works done with previous affiliation. ')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col1.subheader("Number of publications")
   col2.subheader("Rank of journal publications")
   col3.subheader("Citations")
   col4.subheader("Normalized Impact factor")
-  col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories, based on data from MTMT.")
-  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the top 25%, 25%-50%, 50%-75% .")
+  col1.write("Scientific results can be published in many different forms, in many different forums. Below are the statistics for the most important categories.")
+  col2.write("Journals are classified into different categories according to their ranks. Journals ranked \"D1\" are in the top 10% of their field, while the categories \"Q1\"-\"Q4\" represent the quartiles.")
   col3.write("Citation rates are one of the main indicators of scientific output, what ultimately matters is how interesting the results are to the scientific community, how many people consider them worth mentioning. Of course, only independent citations should be counted, which does not include citations of the authors' own work.")
   col4.write("A questionable measure of the rank of a published paper is the impact factor. It is much debated because, due to different publication habits, impact factors can vary widely from one discipline to another. Moreover, in recent years, impact factors in the same field have also increased by leaps and bounds, making it more difficult to compare the impact factors of older and newer papers. To overcome these problems the normalised impact factor has been introduced, where the normalisation is done by the median impact factor for the given year in the given field.")
+  pubs.rename(columns={"Év": "year"}, inplace=True)
+  pubs.rename(columns={"Konferenciacikkek száma": "Conference paper"}, inplace=True)
+  pubs.rename(columns={"Könyv és könyvfejezet": "Book and book chaptes"}, inplace=True)
+  pubs.rename(columns={"Lektorált folyóiratok száma": "Journal paper"}, inplace=True)
+  pubs.rename(columns={"Szabadalom": "Patent"}, inplace=True)
+  pubs.rename(columns={"I pontszám": "Citation"}, inplace=True)
+
   a=pubs[pubs['Tanszék'] == "ANALYSIS"]
   b=pubs[pubs['Tanszék'] == "ALGEBRA"]
   c=pubs[pubs['Tanszék'] == "Geometry"]
   d=pubs[pubs['Tanszék'] == "Differential_Equations"]
   e=pubs[pubs['Tanszék'] == "Stochastics"]
+  col1.write("\n")
+  col1.write("Please enter the interval for which you are interested in the publication performance.")
   slider_range=col1.slider("year interval",2003, 2022,value=[2005,2020])
   maxYear = slider_range[1]
   minYear = slider_range[0]
   df = pubs
-  df = df[(df["Év"]>=minYear) & (df["Év"]<=maxYear)]
+  df = df[(df["year"]>=minYear) & (df["year"]<=maxYear)]
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
-  fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Konferenciacikkek száma", "Könyv és könyvfejezet", "Lektorált folyóiratok száma", "Szabadalom"])
+  fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Conference paper", "Book and book chaptes", "Journal paper", "Patent"])
   col1.plotly_chart(fig, use_container_width=True)
+  col2.write("\n")
+  col2.write("Please enter the interval for which you are interested in the publication performance.")
   slider_range2=col2.slider("year interval",2003, 2022,value=[2005,2020] ,key = "ab")
   maxYear2 = slider_range2[1]
   minYear2 = slider_range2[0]
   df = pubs
-  df = df[(df["Év"]>=minYear2) & (df["Év"]<=maxYear2)]
+  df = df[(df["year"]>=minYear2) & (df["year"]<=maxYear2)]
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig = go.Figure(data=[
-    go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["Év"], y=a["I pontszám"]),
-    go.Bar(name='Algebra',opacity=0.8,marker_color='#F58518', x=pubs["Év"], y=b["I pontszám"]),
-    go.Bar(name='Geometry',opacity=0.8,marker_color='#E45756', x=pubs["Év"], y= c["I pontszám"]),
-    go.Bar(name='Differential Equations',opacity=0.8,marker_color='#72B7B2', x=pubs["Év"], y= d["I pontszám"]),
-    go.Bar(name='Stochastics',opacity=0.8,marker_color='#54A24B', x=pubs["Év"], y= e["I pontszám"])
+    go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["year"], y=a["Citation"]),
+    go.Bar(name='Algebra',opacity=0.8,marker_color='#F58518', x=pubs["year"], y=b["Citation"]),
+    go.Bar(name='Geometry',opacity=0.8,marker_color='#E45756', x=pubs["year"], y= c["Citation"]),
+    go.Bar(name='Differential Equations',opacity=0.8,marker_color='#72B7B2', x=pubs["year"], y= d["Citation"]),
+    go.Bar(name='Stochastics',opacity=0.8,marker_color='#54A24B', x=pubs["year"], y= e["Citation"])
   ])
   col3.plotly_chart(fig, use_container_width=True)
   fig = go.Figure(data=[
-    go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["Év"], y=a["Normalizált IF"]),
-    go.Bar(name='Algebra',opacity=0.8,marker_color='#F58518', x=pubs["Év"], y=b["Normalizált IF"]),
-    go.Bar(name='Geometry',opacity=0.8,marker_color='#E45756', x=pubs["Év"], y= c["Normalizált IF"]),
-    go.Bar(name='Differential Equations',opacity=0.8,marker_color='#72B7B2', x=pubs["Év"], y= d["Normalizált IF"]),
-    go.Bar(name='Stochastics',opacity=0.8,marker_color='#54A24B', x=pubs["Év"], y= e["Normalizált IF"])
+    go.Bar(name='Analysis',opacity=0.8,marker_color='#4C78A8', x=pubs["year"], y=a["Normalizált IF"]),
+    go.Bar(name='Algebra',opacity=0.8,marker_color='#F58518', x=pubs["year"], y=b["Normalizált IF"]),
+    go.Bar(name='Geometry',opacity=0.8,marker_color='#E45756', x=pubs["year"], y= c["Normalizált IF"]),
+    go.Bar(name='Differential Equations',opacity=0.8,marker_color='#72B7B2', x=pubs["year"], y= d["Normalizált IF"]),
+    go.Bar(name='Stochastics',opacity=0.8,marker_color='#54A24B', x=pubs["year"], y= e["Normalizált IF"])
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
@@ -400,7 +426,7 @@ def draw1(relations_person,dep2,max_size,min_size):
   HtmlFile = open("example2.html", 'r', encoding='utf-8')
   source_code = HtmlFile.read() 
   with col00:
-       components.html(source_code, height = 2300)
+       components.html(source_code, height = 700)
 def page6_1(dep2,max_size,min_size):
     pubs=pd.read_csv('people_flt.csv')
     node=pd.read_csv('node_person.csv')
@@ -438,7 +464,10 @@ def page6_6(dep2,max_size,min_size):
     relations_person=load1(pubs,"Algebra",max_size,min_size)
     draw1(relations_person,dep2,max_size,min_size)
 
-
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 
 st.set_page_config(page_title="My Streamlit App", page_icon=":guardsman:", layout="wide")
@@ -450,15 +479,20 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-logo, intro = st.columns([1,5])
-image = Image.open('logo.png')
-logo.image(image, caption='', use_column_width=None)
-intro.subheader('BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS: \n  :red[INSTITUTE OF MATHEMATICS RESEARCH]')
-
+logo, intro,math_logo = st.columns([2,5,1])
+image_base64 = get_base64_of_bin_file('logo.png')
+link="https://www.bme.hu/?language=en"
+html = f"<a href='{link}'><img src='data:image/png;base64,{image_base64}'></a>" 
+logo.markdown(html, unsafe_allow_html=True)
+intro.subheader('Research output of the Institute of Mathematics, :red[BME]')
+image_base64_2 = get_base64_of_bin_file('math_logo.png')
+link_2="https://math.bme.hu/?language=en"
+html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='150' height='70'></a>" 
+math_logo.markdown(html_2, unsafe_allow_html=True)
 selected = option_menu(
     menu_title=None,
     options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
-    icons=["bar-chart-fill", "bar-chart-fill", "list-task", "bounding-box-circles", "bounding-box-circles"], 
+    icons=["bar-chart-fill", "bar-chart-steps", "list-task", "diagram-2", "bounding-box-circles"], 
     orientation="horizontal",
 )
 if selected == "Publications":
@@ -469,58 +503,88 @@ if selected == "Top results":
 if selected == "Department comparison":
   page5()
 if selected == "Citation graph":
+ st.write("The citation graph shows how BME MI researchers build upon each other works. The nodes correspond to our current researchers coloured by the departments. (If you Zoom in you can see the names.) There is a directed link from node A to node B, if researcher A has written an article that cites a work of Researcher B. The width of the link is proportional to the number of such citations.The size of the node is proportional to the research impact of the corresponding measured by H index, number of publications, cumulative impact or number of citations.")
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col01,col00= st.columns([1, 5])
- dep = col01.selectbox("Departement", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
+ dep = col01.selectbox("Departement", ["all","ANALYSIS","ALGEBRA", " GEOMETRY", "DIFFERENTIAL EQUATIONS","STOCHASTICS"])
  dep2 = col01.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
  slider_range_size=col01.slider("number of citation",1, 40,value=[1,80] ,key = "ad")
  max_size = slider_range_size[1]
  min_size = slider_range_size[0]
  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
- col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
- col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"Algebra"}</h1>', unsafe_allow_html=True)
- col3.markdown(f'<h1 style="color:#F58518;font-size:14px;">{"Geometria"}</h1>', unsafe_allow_html=True)
- col4.markdown(f'<h1 style="color:#E45756;font-size:14px;">{"Differenciálegyenletek"}</h1>', unsafe_allow_html=True)
- col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"Sztochasztika"}</h1>', unsafe_allow_html=True)
+ col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"ANALYSIS"}</h1>', unsafe_allow_html=True)
+ col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"ALGEBRA"}</h1>', unsafe_allow_html=True)
+ col3.markdown(f'<h1 style="color:#F58518;font-size:14px;">{" GEOMETRY"}</h1>', unsafe_allow_html=True)
+ col4.markdown(f'<h1 style="color:#E45756;font-size:14px;">{"DIFFERENTIAL EQUATIONS"}</h1>', unsafe_allow_html=True)
+ col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"STOCHASTICS"}</h1>', unsafe_allow_html=True)
 
  if dep == "all":
     page4_1(dep2,max_size,min_size)
- if dep == "Analízis":
+ if dep == "ANALYSIS":
     page4_2(dep2,max_size,min_size)
- if dep == "Geometria":
+ if dep == " GEOMETRY":
     page4_3(dep2,max_size,min_size)
- if dep == "Differenciálegyenletek":
+ if dep == "DIFFERENTIAL EQUATIONS":
     page4_4(dep2,max_size,min_size)
- if dep == "Sztochasztika":
+ if dep == "STOCHASTICS":
     page4_5(dep2,max_size,min_size)
- if dep == "Algebra":
+ if dep == "ALGEBRA":
     page4_6(dep2,max_size,min_size)
-
 if selected == "Co-authorship graph":
- col0,col1, col2 ,col3, col4,col5= st.columns(6)
- col01,col00= st.columns([1, 5])
- dep = col01.selectbox("Department", ["all","Analízis","Algebra", "Geometria", "Differenciálegyenletek","Sztochasztika"])
- dep2 = col01.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
- slider_range_size=col01.slider("number of joint paper",1, 40,value=[1,40] ,key = "ag")
- max_size = slider_range_size[1]
- min_size = slider_range_size[0]
- col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
- col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"Analízis"}</h1>', unsafe_allow_html=True)
- col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"Algebra"}</h1>', unsafe_allow_html=True)
- col3.markdown(f'<h1 style="color:#F58518;font-size:14px;">{"Geometria"}</h1>', unsafe_allow_html=True)
- col4.markdown(f'<h1 style="color:#E45756;font-size:14px;">{"Differenciálegyenletek"}</h1>', unsafe_allow_html=True)
- col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"Sztochasztika"}</h1>', unsafe_allow_html=True)
-
- if dep == "all":
+  st.write("The co-authorship graph shows how BME MI researchers collaborate with each other.  The nodes correspond to our current researchers coloured by the departments. (If you Zoom in you can see the names.) Two nodes are connected if the corresponding researchers have at least one joint research paper. The width of the link is proportional to the number of joint papers.")
+  col0,col1, col2 ,col3, col4,col5= st.columns(6)
+  col01,col00= st.columns([1, 5])
+  dep = col01.selectbox("Department", ["all","ANALYSIS","ALGEBRA", " GEOMETRY", "DIFFERENTIAL EQUATIONS","STOCHASTICS"])
+  dep2 = col01.selectbox("Node size", ["hIndex","pubCount","ifCount", "citations"])
+  slider_range_size=col01.slider("number of joint paper",1, 40,value=[1,40] ,key = "ag")
+  max_size = slider_range_size[1]
+  min_size = slider_range_size[0]
+  col0.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"        "}</h1>', unsafe_allow_html=True)
+  col1.markdown(f'<h1 style="color:#4C78A8;font-size:14px;">{"ANALYSIS"}</h1>', unsafe_allow_html=True)
+  col2.markdown(f'<h1 style="color:#EECA3B;font-size:14px;">{"ALGEBRA"}</h1>', unsafe_allow_html=True)
+  col3.markdown(f'<h1 style="color:#F58518;font-size:14px;">{" GEOMETRY"}</h1>', unsafe_allow_html=True)
+  col4.markdown(f'<h1 style="color:#E45756;font-size:14px;">{"DIFFERENTIAL EQUATIONS"}</h1>', unsafe_allow_html=True)
+  col5.markdown(f'<h1 style="color:#72B7B2;font-size:14px;">{"STOCHASTICS"}</h1>', unsafe_allow_html=True)
+  if dep == "all":
     page6_1(dep2,max_size,min_size)
- if dep == "Analízis":
+  if dep == "ANALYSIS":
     page6_2(dep2,max_size,min_size)
- if dep == "Geometria":
+  if dep == " GEOMETRY":
     page6_3(dep2,max_size,min_size)
- if dep == "Differenciálegyenletek":
+  if dep == "DIFFERENTIAL EQUATIONS":
     page6_4(dep2,max_size,min_size)
- if dep == "Sztochasztika":
+  if dep == "STOCHASTICS":
     page6_5(dep2,max_size,min_size)
- if dep == "Algebra":
+  if dep == "ALGEBRA":
     page6_6(dep2,max_size,min_size)
     
+
+st.markdown('This website builds heavily on a [similar site of the BME VIK](http://research.vik.bme.hu/#/results?lang=en), developed by the Vice Dean of Science, [Gábor Horváth](http://www.hit.bme.hu/~ghorvath/index.php?page=2&lang=hu). We acknowledge the help and guidance of  Dr.Gábor Horváth.')
+footer="""<style>
+a:link , a:visited{
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: white;
+color: black;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>Developed  by <a style='display: block; text-align: center;' href="https://hsdslab.math.bme.hu/en.html" target="_blank">HSDSLab</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
