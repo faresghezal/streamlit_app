@@ -9,7 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from networkx.algorithms.community import greedy_modularity_communities
 import numpy as np
-
+from PIL import Image
 def hide_anchor_link():
     st.markdown(
         body="""
@@ -116,16 +116,18 @@ def page3():
   scores = scores[scores['auth_year'] ==pub_year]
   scores = scores[scores['cit_year'] ==cit_year]
   st.markdown(hide_table_row_index, unsafe_allow_html=True)
-  col1.subheader("Authors with top impact ")
-  col3.subheader("The most cited authors")
-  col4.subheader("The most cited publications")
-  col2.subheader("Most influential publications")
+  col3.subheader("Authors with top impact ")
+  col1.subheader("The most cited authors")
+  col2.subheader("The most cited publications")
+  col4.subheader("Most influential publications")
   col5.subheader("Researchers with top H index")
-  col1.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
-  col3.write("Based on the number of citations according to  MTMT portal, the most cited authors of the faculty are as follows (one author is counted only once).")
-  col4.write("Based on the number of citations according to MTMT portal , the most cited publications of the faculty are as follows (one author is counted only once).")
-  col2.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
+  col3.write("authors with top impact factor The authors of the faculty having the highest impact factor are as follows.")
+  col1.write("Based on the number of citations according to  MTMT portal, the most cited authors of the faculty are as follows (one author is counted only once).")
+  col2.write("Based on the number of citations according to MTMT portal , the most cited publications of the faculty are as follows (one author is counted only once).")
+  col4.write("Publications belonging to the top 1% according to WoS InCites Percentiles, considering the number of citations and the publication date.")
   col5.write("The list of the researchers having the highest H index are as follows.")
+
+
   people=pd.read_csv('people_flt.csv')
   df["cím"] = df["cím"].str.lower()
   df["cím"] = df["cím"].str.capitalize()
@@ -136,10 +138,10 @@ def page3():
   list3=scores.sort_values(by=["citations"],ascending=False)
   list4=df11.sort_values(by=["independentCitingPubCount"],ascending=False)
   list6=scores.sort_values(by=["hIndex"],ascending=False)
-  col1.table(list1[[ "Név","ifScore"]].head(10))
-  col3.table(list3[[ "Név","citations"]].head(10))
-  col4.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
-  col2.table(pubs[[ "év", "szerző","cím"]].head(10))
+  col3.table(list1[[ "Név","ifScore"]].head(10))
+  col1.table(list3[[ "Név","citations"]].head(10))
+  col2.table(list4[[ 'publishedYear','name','authors','independentCitingPubCount']].head(10))
+  col4.table(pubs[[ "év", "szerző","cím"]].head(10))
   col5.table(list6[[ "Név","hIndex"]].head(10))
 
 def load(x):
@@ -448,7 +450,11 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-st.markdown("# Research MTMT")
+logo, intro = st.columns([1,5])
+image = Image.open('logo.png')
+logo.image(image, caption='', use_column_width=None)
+intro.subheader('BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS: \n  :red[INSTITUTE OF MATHEMATICS RESEARCH]')
+
 selected = option_menu(
     menu_title=None,
     options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
