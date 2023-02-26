@@ -48,9 +48,9 @@ def page1():
      pubs=pd.read_csv("mtmt-faculty-yearly.csv")
   if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-faculty-yearly_authors.csv") 
-  st.markdown('The data is extracted from the MTMT website([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
-  st.markdown('-By selecting  "Pubs. by Institute of Mathematics", We take into account the work done in departement regardless of authors.')
-  st.markdown('-By selecting  "Pubs. by current researchers", We take into account the work of various reserchers currently affiliated with the department. This approache may include works done with previous affiliation. ')
+  st.markdown('The data is extracted from the [MTMT website](https://www.mtmt.hu). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting  "Pubs. by Institute of Mathematics", we take into account the work done in departement regardless of authors.')
+  st.markdown('-By selecting  "Pubs. by current researchers", we take into account the work of various researchers currently affiliated with the department. This approach may include works done with previous affiliation. ')
   max_year=2023
   figSize = (13,5)
   col1, col2 = st.columns(2)
@@ -70,13 +70,18 @@ def page1():
   pubs.rename(columns={"Lektorált folyóiratok száma": "Journal paper"}, inplace=True)
   pubs.rename(columns={"Szabadalom": "Patent"}, inplace=True)
   pubs.rename(columns={"I pontszám": "Citation"}, inplace=True)
-
   fig = px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["Conference paper", "Book and book chaptes", "Journal paper", "Patent"])
+  fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(legend_title="")
   col1.plotly_chart(fig, use_container_width=True)
   fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(legend_title="")
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["Citation"])
+  fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(legend_title="")
   col3.plotly_chart(fig, use_container_width=True)
   fig = go.Figure(data=[
     go.Bar(name='IF',opacity=0.8,marker_color='#4C78A8', x=pubs["year"], y=pubs["IF"]),
@@ -85,7 +90,8 @@ def page1():
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
-
+  
+  
 def page3():
   selected2 = option_menu(
     menu_title=None,
@@ -112,9 +118,9 @@ def page3():
   df11 = df11[df11['publishedYear'] >=pub_year]
   df11 = df11[df11['cit_year'] >=cit_year]  
   df11 = df11.drop_duplicates(subset=['name'])
-  st.markdown('The data is extracted from the MTMT website([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the affiliation of the authors:  ')
-  st.markdown('-By selecting the with affiliation, We take into account the work of various reserchers done in collaboration with the departement. ')
-  st.markdown('-By selecting the departement, We take into account the work done by authors including theirs in different positions.')
+  st.markdown('The data is extracted from the [MTMT website](https://www.mtmt.hu). There are various criteria to consider. As such we provide the choice to take into account the affiliation of the authors:  ')
+  st.markdown('-By selecting the with affiliation, we take into account the work of various researchers done in collaboration with the departement. ')
+  st.markdown('-By selecting the departement, we take into account the work done by authors including theirs in different positions.')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col5, col6 = st.columns(2)
@@ -272,9 +278,9 @@ def page5():
      pubs=pd.read_csv("mtmt-yearly1.csv")
   if selected2 == "Pubs. by current researchers":
      pubs=pd.read_csv("mtmt-yearly1_authors.csv")
-  st.markdown('The data is extracted from the MTMT website ([link](https://www.mtmt.hu)). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
-  st.markdown('-By selecting "Pubs. by Institute of Mathematics", We take into account the work done in departement regardless of authors.')
-  st.markdown('-By selecting "Pubs. by current researchers", We take into account the work of various reserchers currently affiliated with the department. This approache may include works done with previous affiliation. ')
+  st.markdown('The data is extracted from the [MTMT website](https://www.mtmt.hu). There are various criteria to consider. As such we provide the choice to take into account the departement or the authors for the various graphs:  ')
+  st.markdown('-By selecting "Pubs. by Institute of Mathematics", we take into account the work done in departement regardless of authors.')
+  st.markdown('-By selecting "Pubs. by current researchers", we take into account the work of various researchers currently affiliated with the department. This approach may include works done with previous affiliation. ')
   col1, col2 = st.columns(2)
   col3, col4 = st.columns(2)
   col1.subheader("Number of publications")
@@ -307,6 +313,8 @@ def page5():
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Conference paper", "Book and book chaptes", "Journal paper", "Patent"])
+  fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(legend_title="")
   col1.plotly_chart(fig, use_container_width=True)
   col2.write("\n")
   col2.write("Please enter the interval for which you are interested in the publication performance.")
@@ -318,6 +326,8 @@ def page5():
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(legend_title="")
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
   fig = go.Figure(data=[
@@ -506,7 +516,7 @@ if selected == "Citation graph":
  st.write("The citation graph shows how BME MI researchers build upon each other works. The nodes correspond to our current researchers coloured by the departments. (If you Zoom in you can see the names.) There is a directed link from node A to node B, if researcher A has written an article that cites a work of Researcher B. The width of the link is proportional to the number of such citations.The size of the node is proportional to the research impact of the corresponding measured by H index, number of publications, cumulative impact or number of citations.")
  col0,col1, col2 ,col3, col4,col5= st.columns(6)
  col01,col00= st.columns([1, 5])
- dep = col01.selectbox("Departement", ["all","ANALYSIS","ALGEBRA", " GEOMETRY", "DIFFERENTIAL EQUATIONS","STOCHASTICS"])
+ dep = col01.selectbox("Department", ["all","ANALYSIS","ALGEBRA", " GEOMETRY", "DIFFERENTIAL EQUATIONS","STOCHASTICS"])
  dep2 = col01.selectbox("Node size", [ "hIndex","pubCount","ifCount", "citations"])
  slider_range_size=col01.slider("number of citation",1, 40,value=[1,80] ,key = "ad")
  max_size = slider_range_size[1]
@@ -559,7 +569,7 @@ if selected == "Co-authorship graph":
     page6_6(dep2,max_size,min_size)
     
 
-st.markdown('This website builds heavily on a [similar site of the BME VIK](http://research.vik.bme.hu/#/results?lang=en), developed by the Vice Dean of Science, [Gábor Horváth](http://www.hit.bme.hu/~ghorvath/index.php?page=2&lang=hu). We acknowledge the help and guidance of  Dr.Gábor Horváth.')
+st.markdown('This website builds heavily on a [similar site of the BME VIK](http://research.vik.bme.hu/#/results?lang=en), developed by the Vice Dean of Science, [Gábor Horváth](http://www.hit.bme.hu/~ghorvath/index.php?page=2&lang=hu). We acknowledge the help and guidance of  Dr. Gábor Horváth.')
 footer="""<style>
 a:link , a:visited{
 color: red;
