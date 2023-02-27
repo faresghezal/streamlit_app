@@ -297,11 +297,13 @@ def page5():
   pubs.rename(columns={"Lektorált folyóiratok száma": "Journal paper"}, inplace=True)
   pubs.rename(columns={"Szabadalom": "Patent"}, inplace=True)
   pubs.rename(columns={"I pontszám": "Citation"}, inplace=True)
-
-  a=pubs[pubs['Tanszék'] == "ANALYSIS"]
-  b=pubs[pubs['Tanszék'] == "ALGEBRA"]
+  pubs.loc[pubs["Tanszék"] == "ANALYSIS", "Tanszék"] = "Analysis"
+  pubs.loc[pubs["Tanszék"] == "ALGEBRA", "Tanszék"] = "Algebra"
+  pubs.loc[pubs["Tanszék"] == "Differential_Equations", "Tanszék"] = "Differential Equations"
+  a=pubs[pubs['Tanszék'] == "Analysis"]
+  b=pubs[pubs['Tanszék'] == "Algebra"]
   c=pubs[pubs['Tanszék'] == "Geometry"]
-  d=pubs[pubs['Tanszék'] == "Differential_Equations"]
+  d=pubs[pubs['Tanszék'] == "Differential Equations"]
   e=pubs[pubs['Tanszék'] == "Stochastics"]
   col1.write("\n")
   col1.write("Please enter the interval for which you are interested in the publication performance.")
@@ -314,6 +316,7 @@ def page5():
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["Conference paper", "Book and book chaptes", "Journal paper", "Patent"])
   fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(xaxis_title=None)
   fig.update_layout(legend_title="")
   col1.plotly_chart(fig, use_container_width=True)
   col2.write("\n")
@@ -327,6 +330,7 @@ def page5():
   df = df.reset_index()
   fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   fig.update_yaxes(visible=False, showticklabels=False)
+  fig.update_layout(xaxis_title=None)
   fig.update_layout(legend_title="")
   col2.plotly_chart(fig, use_container_width=True)
   st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -497,7 +501,7 @@ logo.markdown(html, unsafe_allow_html=True)
 intro.subheader('Research output of the Institute of Mathematics, :red[BME]')
 image_base64_2 = get_base64_of_bin_file('math_logo.png')
 link_2="https://math.bme.hu/?language=en"
-html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='150' height='70'></a>" 
+html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='160' height='70'></a>" 
 math_logo.markdown(html_2, unsafe_allow_html=True)
 selected = option_menu(
     menu_title=None,
