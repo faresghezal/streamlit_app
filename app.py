@@ -9,7 +9,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from networkx.algorithms.community import greedy_modularity_communities
 import numpy as np
-from PIL import Image
 import base64
 def hide_anchor_link():
     st.markdown(
@@ -501,7 +500,7 @@ logo.markdown(html, unsafe_allow_html=True)
 intro.subheader('Research output of the Institute of Mathematics, :red[BME]')
 image_base64_2 = get_base64_of_bin_file('math_logo.png')
 link_2="https://math.bme.hu/?language=en"
-html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='160' height='70'></a>" 
+html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='160'></a>" 
 math_logo.markdown(html_2, unsafe_allow_html=True)
 selected = option_menu(
     menu_title=None,
@@ -574,31 +573,74 @@ if selected == "Co-authorship graph":
     
 
 st.markdown('This website builds heavily on a [similar site of the BME VIK](http://research.vik.bme.hu/#/results?lang=en), developed by the Vice Dean of Science, [Gábor Horváth](http://www.hit.bme.hu/~ghorvath/index.php?page=2&lang=hu). We acknowledge the help and guidance of  Dr. Gábor Horváth.')
-footer="""<style>
-a:link , a:visited{
-color: red;
-background-color: transparent;
-text-decoration: underline;
-}
 
-a:hover,  a:active {
-color: red;
-background-color: transparent;
-text-decoration: underline;
-}
 
+file_ = open("./fb.png", "rb")
+contents = file_.read()
+fb_url = base64.b64encode(contents).decode("utf-8")
+file_.close()
+file_ = open("./twt.png", "rb")
+contents = file_.read()
+twt_url = base64.b64encode(contents).decode("utf-8")
+file_.close()
+file_ = open("./web.png", "rb")
+contents = file_.read()
+web_url = base64.b64encode(contents).decode("utf-8")
+file_.close()
+file_ = open("./HSDSLAB2.png", "rb")
+contents = file_.read()
+hsds_url = base64.b64encode(contents).decode("utf-8")
+file_.close()
+footer=('''<style>
 .footer {
 position: fixed;
 left: 0;
 bottom: 0;
 width: 100%;
-background-color: white;
+background-color: #ee605f;
 color: black;
 text-align: center;
+overflow: hidden;
 }
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-gb8h{border-color:#ee605f;text-align:left}
+.tg .tg-hdil{border-color:#ee605f;text-align:center}
+.tg .tg-ik7g{border-color:#ee605f;text-align:right}
+
+.footerimg /* lábléc ikonjai */ {
+transition: 0.5s; }
+
+.footerimg:hover {
+transform: scale(0.8);
+transition: 0.5s;
+cursor: pointer; }
+
 </style>
-<div class="footer">
-<p>Developed  by <a style='display: block; text-align: center;' href="https://hsdslab.math.bme.hu/en.html" target="_blank">HSDSLab</a></p>
-</div>
-"""
+
+<div class="footer" style="margin-bottom:-15px">'''
++
+f'''
+<table class="tg" style="undefined;table-layout: fixed; width: 100%">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 48%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+  <tr>
+    <td class="tg-gb8h"></td>
+    <td class="tg-hdil"><p style="color:white; font-family:Roboto; font-size:16px; float:left;margin-top:3px; text-align:right">BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS &nbsp&nbsp&nbsp<a target="_blank" href="https://www.bme.hu/?language=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{web_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.facebook.com/Muegyetem.hu/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{fb_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://twitter.com/bme_en?lang=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{twt_url}" style="width:2.5%" ></img></a></p>
+</td>
+    <td class="tg-ik7g"><a target="_blank" href="https://hsdslab.math.bme.hu/en.html"> <img class="footerimg" style="width:200px; float:right;padding-right:5px" src="data:image/gif;base64,{hsds_url}"> </img></a></div>
+</td>
+  </tr>
+</thead>
+</table>
+''')
+
 st.markdown(footer,unsafe_allow_html=True)
+
