@@ -497,7 +497,7 @@ image_base64 = get_base64_of_bin_file('logo.png')
 link="https://www.bme.hu/?language=en"
 html = f"<a href='{link}'><img src='data:image/png;base64,{image_base64}'></a>" 
 logo.markdown(html, unsafe_allow_html=True)
-intro.subheader('Research output of the Institute of Mathematics, :red[BME]')
+intro.markdown('<h1  style="padding: 0px 0px 50px 0px">Research output of the Institute of Mathematics,<span style="color:red"> BME</span></h1> ', unsafe_allow_html=True)
 image_base64_2 = get_base64_of_bin_file('math_logo.png')
 link_2="https://math.bme.hu/?language=en"
 html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='160'></a>" 
@@ -633,7 +633,7 @@ f'''
 <thead>
   <tr>
     <td class="tg-gb8h"></td>
-    <td class="tg-hdil"><p style="color:white; font-family:Roboto; font-size:16px; float:left;margin-top:3px; text-align:right">BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS &nbsp&nbsp&nbsp<a target="_blank" href="https://www.bme.hu/?language=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{web_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.facebook.com/Muegyetem.hu/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{fb_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://twitter.com/bme_en?lang=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{twt_url}" style="width:2.5%" ></img></a></p>
+    <td class="tg-hdil"><p style="color:white; font-family:sans-serif; font-size:16px; float:left;margin-top:3px; text-align:right">BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS &nbsp&nbsp&nbsp<a target="_blank" href="https://www.bme.hu/?language=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{web_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.facebook.com/Muegyetem.hu/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{fb_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://twitter.com/bme_en?lang=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{twt_url}" style="width:2.5%" ></img></a></p>
 </td>
     <td class="tg-ik7g"><a target="_blank" href="https://hsdslab.math.bme.hu/en.html"> <img class="footerimg" style="width:200px; float:right;padding-right:5px" src="data:image/gif;base64,{hsds_url}"> </img></a></div>
 </td>
