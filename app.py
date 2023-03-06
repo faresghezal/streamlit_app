@@ -73,7 +73,7 @@ def page1():
   fig.update_yaxes(visible=False, showticklabels=False)
   fig.update_layout(legend_title="")
   col1.plotly_chart(fig, use_container_width=True)
-  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="year", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig=px.bar(pubs,opacity=0.8, color_discrete_sequence=["#2ca02c","#bcbd22", "gold",  "#ff7f0e","#d62728" ], x="year", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   fig.update_yaxes(visible=False, showticklabels=False)
   fig.update_layout(legend_title="")
   col2.plotly_chart(fig, use_container_width=True)
@@ -327,7 +327,7 @@ def page5():
   df = df[(df["year"]>=minYear2) & (df["year"]<=maxYear2)]
   df=df.groupby(['Tanszék']).sum()
   df = df.reset_index()
-  fig = px.bar(df,opacity=0.8, color_discrete_sequence=px.colors.qualitative.T10, x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
+  fig = px.bar(df,opacity=0.8, color_discrete_sequence=["#2ca02c","#bcbd22", "gold",  "#ff7f0e","#d62728" ], x="Tanszék", y=["D1", "Q1", "Q2", "Q3", "Q4"])
   fig.update_yaxes(visible=False, showticklabels=False)
   fig.update_layout(xaxis_title=None)
   fig.update_layout(legend_title="")
@@ -492,22 +492,28 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-logo, intro,math_logo = st.columns([2,5,1])
-image_base64 = get_base64_of_bin_file('logo.png')
+
+
+
+
 link="https://www.bme.hu/?language=en"
-html = f"<a href='{link}'><img src='data:image/png;base64,{image_base64}'></a>" 
-logo.markdown(html, unsafe_allow_html=True)
-intro.markdown('<h1  style="padding: 0px 0px 50px 0px">Research output of the Institute of Mathematics,<span style="color:red"> BME</span></h1> ', unsafe_allow_html=True)
+image_base64 = get_base64_of_bin_file('logo.png')
 image_base64_2 = get_base64_of_bin_file('math_logo.png')
 link_2="https://math.bme.hu/?language=en"
-html_2 = f"<a href='{link_2}'><img src='data:image/png ;base64,{image_base64_2}' width='160'></a>" 
-math_logo.markdown(html_2, unsafe_allow_html=True)
+a = f'<div style="background-color:#ee605f;left: 0;top: 0;width: 100%;margin-left: 0px; margin-right: 0px;"><div class="column"style="float: left;width: 15.0%;"><a href="{link}"><img src="data:image/png;base64,{image_base64}"></a></div><div class="column"style="float: left;width: 70.0%;"><h1  style="margin: 0px 0px 0px 0px;padding: 0px 0px 50px 0px ">Research output of the Institute of Mathematics,<span style="color:red"> BME</span></h1></div><div class="column"style="float: left;width: 15.0%;"><a href="{link_2}"><img src="data:image/png ;base64,{image_base64_2}" width="160" style="margin: 8px 0px 0px 0px"></a></div></div>' 
+st.markdown(a, unsafe_allow_html=True)
+
+st.markdown(f'<div class="line" style=" display: inline-block;border-top: 1px solid black;width:  100%;margin-top: 0px; margin-bottom: 20px"></div>', unsafe_allow_html=True)
 selected = option_menu(
     menu_title=None,
     options=["Publications","Department comparison", "Top results", "Citation graph", "Co-authorship graph"],
     icons=["bar-chart-fill", "bar-chart-steps", "list-task", "diagram-2", "bounding-box-circles"], 
     orientation="horizontal",
 )
+
+
+
+
 if selected == "Publications":
   page1()
 
@@ -579,9 +585,9 @@ file_ = open("./fb.png", "rb")
 contents = file_.read()
 fb_url = base64.b64encode(contents).decode("utf-8")
 file_.close()
-file_ = open("./twt.png", "rb")
+file_ = open("./insta.png", "rb")
 contents = file_.read()
-twt_url = base64.b64encode(contents).decode("utf-8")
+ins_url = base64.b64encode(contents).decode("utf-8")
 file_.close()
 file_ = open("./web.png", "rb")
 contents = file_.read()
@@ -633,7 +639,7 @@ f'''
 <thead>
   <tr>
     <td class="tg-gb8h"></td>
-    <td class="tg-hdil"><p style="color:white; font-family:sans-serif; font-size:16px; float:left;margin-top:3px; text-align:right">BUDAPEST UNIVERSITY OF TECHNOLOGY AND ECONOMICS &nbsp&nbsp&nbsp<a target="_blank" href="https://www.bme.hu/?language=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{web_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.facebook.com/Muegyetem.hu/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{fb_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://twitter.com/bme_en?lang=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{twt_url}" style="width:2.5%" ></img></a></p>
+    <td class="tg-hdil"><p style="color:white; font-family:sans-serif; font-size:16px; float:left;margin-top:3px; text-align:right">INSTITUTE OF MATHEMATICS, BME &nbsp&nbsp&nbsp<a target="_blank" href="https://math.bme.hu/?language=en" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{web_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.facebook.com/bmemath/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{fb_url}" style="width:2.5%" ></img></a><a target="_blank" href="https://www.instagram.com/bme.math/" style="margin:1px;padding:1px"><img class="footerimg" src="data:image/gif;base64,{ins_url}" style="width:2.5%" ></img></a></p>
 </td>
     <td class="tg-ik7g"><a target="_blank" href="https://hsdslab.math.bme.hu/en.html"> <img class="footerimg" style="width:200px; float:right;padding-right:5px" src="data:image/gif;base64,{hsds_url}"> </img></a></div>
 </td>
