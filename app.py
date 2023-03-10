@@ -43,18 +43,19 @@ def hide_anchor_link():
          unsafe_allow_html=True,
 )
 def loadfolder1():
-  os.mkdir("./tempo")
+  content = []
   mtid="10012522,10041405,10011729,10042381,10011669,10042216,10070052,10042206,10004672,10043154,10063931,10013078,10042246,10046850,10000951,10077397,10085337,10057699,10028223,10010616,10004964,10041238,10003438,10022680,10010572,10011985,10078413,10002331,10041425,10068236,10041406,10003450,10027650,10001247,10000182,10003616,10049654,10028073,10000168,10078429,10050580,10025398,10041428,10019177,10042217,10083060,10011896,10002205,10031107,10060734,10031961,10007872,10017841,10012191,10042205,10032461,10046700,10009038,10011812,10011720,10048502,10028363,10006497,10000799,10052318,10051932,10011727,10042404,10041699,10002058,10000486,10001060,10045285,10041426,10066588,10034810,10000476,10012374,10035521,10084870,10028381,10011667,10065149,10009305,10003409,10065152,10000407,10011665,10011721,10012192,10041399,10001238,10000434,10082160,10041404,10044622,10010416,10023210,10027379,10001251,10000937,10041403,10070736,10011668,10029438,10066279,10058012,10010951,10070026,10019822,10000734,10042772,10058310,10011734,10019824,10019824,10042219,10015273,10009327"                   
   for year in stqdm(range(1990, 2023)):
       page = 1
       while True:
-          fName = f"./tempo/mtmtpubs-{year}-{page}.json"
+
           enYear = year
           stYear = 1900 if year <= 1990 else year
-          os.system(f'wget -O {fName} "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=authors.mtid;in;{mtid}&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
-          with open(fName, "r") as f:
+          os.system(f'wget -O tmp.json "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=authors.mtid;in;{mtid}&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
+          with open("tmp.json", "r") as f:
               try:
                   dta = json.load(f)
+                  content += dta["content"] 
                   if not dta["paging"]["last"]:
                       page += 1
                   else:
@@ -62,18 +63,22 @@ def loadfolder1():
               except:
                   print("Error, retrying")
                   pass
+  return(content)
+  
+  
 def loadfolder2():
-  os.mkdir("./tempo")                 
+  content = []                 
   for year in stqdm(range(1990, 2023)):
       page = 1
       while True:
-          fName = f"./tempo/mtmtpubs-{year}-{page}.json"
+
           enYear = year
           stYear = 1900 if year <= 1990 else year
-          os.system(f'wget -O {fName} "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
-          with open(fName, "r") as f:
+          os.system(f'wget -O tmp.json "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
+          with open("tmp.json", "r") as f:
               try:
                   dta = json.load(f)
+                  content += dta["content"] 
                   if not dta["paging"]["last"]:
                       page += 1
                   else:
@@ -81,11 +86,8 @@ def loadfolder2():
               except:
                   print("Error, retrying")
                   pass
-def update() :
-    content = []
-    for fn in glob.glob("./tempo/*.json"):
-      pubs = json.load(open(fn)) 
-      content += pubs["content"]
+  return(content)
+def update(content) :
     ifdf = pd.read_csv('ifdf_v8_2021.csv')
     ifdf.loc[ifdf["if"].isnull(), "if"] = 0.0
     maxIFYear = ifdf.year.max()
@@ -313,12 +315,11 @@ def update() :
     pubfaculty.index.set_names("Év", inplace=True)
     return (pubfaculty) 
 def update_page_1():
-    loadfolder1()
-    pubfaculty=update()
-    pubfaculty.to_csv("mtmt-faculty-yearly_authors.csv")
-    shutil.rmtree("./tempo")    
-    loadfolder2()
-    pubfaculty=update()
+    content=loadfolder1()
+    pubfaculty=update(content)
+    pubfaculty.to_csv("mtmt-faculty-yearly_authors.csv")  
+    content=loadfolder2()
+    pubfaculty=update(content)
     pubfaculty.to_csv("mtmt-faculty-yearly.csv")
     shutil.rmtree("./tempo") 
 def page1():  
