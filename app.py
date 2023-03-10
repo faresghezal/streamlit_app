@@ -9,6 +9,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 from networkx.algorithms.community import greedy_modularity_communities
 import numpy as np
+import itertools
+import glob
+from stqdm import stqdm
+import shutil
+import json
+import os
 import base64
 def hide_anchor_link():
     st.markdown(
@@ -36,6 +42,285 @@ def hide_anchor_link():
         """,
          unsafe_allow_html=True,
 )
+def loadfolder1():
+  os.mkdir("./tempo")
+  mtid="10012522,10041405,10011729,10042381,10011669,10042216,10070052,10042206,10004672,10043154,10063931,10013078,10042246,10046850,10000951,10077397,10085337,10057699,10028223,10010616,10004964,10041238,10003438,10022680,10010572,10011985,10078413,10002331,10041425,10068236,10041406,10003450,10027650,10001247,10000182,10003616,10049654,10028073,10000168,10078429,10050580,10025398,10041428,10019177,10042217,10083060,10011896,10002205,10031107,10060734,10031961,10007872,10017841,10012191,10042205,10032461,10046700,10009038,10011812,10011720,10048502,10028363,10006497,10000799,10052318,10051932,10011727,10042404,10041699,10002058,10000486,10001060,10045285,10041426,10066588,10034810,10000476,10012374,10035521,10084870,10028381,10011667,10065149,10009305,10003409,10065152,10000407,10011665,10011721,10012192,10041399,10001238,10000434,10082160,10041404,10044622,10010416,10023210,10027379,10001251,10000937,10041403,10070736,10011668,10029438,10066279,10058012,10010951,10070026,10019822,10000734,10042772,10058310,10011734,10019824,10019824,10042219,10015273,10009327"                   
+  for year in stqdm(range(1990, 2023)):
+      page = 1
+      while True:
+          fName = f"./tempo/mtmtpubs-{year}-{page}.json"
+          enYear = year
+          stYear = 1900 if year <= 1990 else year
+          os.system(f'wget -O {fName} "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=authors.mtid;in;{mtid}&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
+          with open(fName, "r") as f:
+              try:
+                  dta = json.load(f)
+                  if not dta["paging"]["last"]:
+                      page += 1
+                  else:
+                      break
+              except:
+                  print("Error, retrying")
+                  pass
+def loadfolder2():
+  os.mkdir("./tempo")                 
+  for year in stqdm(range(1990, 2023)):
+      page = 1
+      while True:
+          fName = f"./tempo/mtmtpubs-{year}-{page}.json"
+          enYear = year
+          stYear = 1900 if year <= 1990 else year
+          os.system(f'wget -O {fName} "https://m2.mtmt.hu/api/publication?cond=published;eq;true&cond=core;eq;true&cond=publishedYear;range;{stYear}%2C{enYear}&sort=publishedYear,desc&sort=firstAuthor,asc&page={page}&size=1000&fields=citations,pubStats&labelLang=hun&cite_type=2"')
+          with open(fName, "r") as f:
+              try:
+                  dta = json.load(f)
+                  if not dta["paging"]["last"]:
+                      page += 1
+                  else:
+                      break
+              except:
+                  print("Error, retrying")
+                  pass
+def update() :
+    content = []
+    for fn in glob.glob("./tempo/*.json"):
+      pubs = json.load(open(fn)) 
+      content += pubs["content"]
+    ifdf = pd.read_csv('ifdf_v8_2021.csv')
+    ifdf.loc[ifdf["if"].isnull(), "if"] = 0.0
+    maxIFYear = ifdf.year.max()
+    ifdf_e = ifdf.copy().set_index(["year", "eissn"]).sort_index()
+    ifdf_p = ifdf.copy().set_index(["year", "pissn"]).sort_index()
+    def getif(pub):
+      if "journal" not in pub:
+          return 0.0, 1.0
+      year = min(pub["publishedYear"], maxIFYear)
+      if "pIssn" in pub["journal"]:
+          issn = pub["journal"]["pIssn"]
+          if (year,issn) in ifdf_p.index:
+              ifval = ifdf_p.loc[(year,issn),"if"]
+              catif = ifdf_p.loc[(year,issn),"categoryMedianIf"]
+              if len(ifval) == 1 and float(ifval) > 0.0:
+                  if len(catif) == 1 and float(catif) > 0.0:
+                      return float(ifval), float(catif)
+                  else:
+                      return float(ifval), float(ifval) # ha if-es az újság, de még nem elég régóta. nincs sok ilyen.
+      if "eIssn" in pub["journal"]:
+          issn = pub["journal"]["eIssn"]
+          if (year,issn) in ifdf_e.index:
+              ifval = ifdf_e.loc[(year,issn),"if"]
+              catif = ifdf_e.loc[(year,issn),"categoryMedianIf"]
+              if len(ifval) == 1 and float(ifval) > 0.0:
+                  if len(catif) == 1 and float(catif) > 0.0:
+                      return float(ifval), float(catif)
+                  else:
+                      return float(ifval), float(ifval) # ha if-es az újság, de még nem elég régóta. nincs sok ilyen.
+      return 0.0, 1.0
+    def getrating(pub):
+      if "ratings" not in pub:
+          return ""
+      for r in pub["ratings"]:
+          if r["otype"] == "SjrRating" and "ranking" in r:
+              return r["ranking"]
+      return ""
+    tszmap = {}
+    tszmap['Algebra Tanszék (BME / TTK / MI)'] = "ALGEBRA"
+    tszmap['Analízis Tanszék (BME / TTK / MI)'] = "ANALYSIS"
+    tszmap['Differenciálegyenletek Tanszék (BME / TTK / MI)'] = "Differential_Equations"
+    tszmap['Geometria Tanszék (BME / TTK / MI)'] = "Geometry"
+    tszmap['Sztochasztika Tanszék (BME / TTK / MI)'] = "Stochastics"
+    inst = []
+    for c in content:
+      if "authorships" in c:
+        for a in c["authorships"]:
+            if a["label"].find("] ") >= 0:
+                inst = inst + [tszmap[s] for s in a["label"].split("] ")[-1].split("; ") if s in tszmap]
+    tanszekek = np.unique(inst)
+    for pub in content:
+      pub["mtmt_title"] = ""
+      if "error" in pub and pub["error"] != "VALIDATION_ERROR":
+        pub["mtmt_cat"] = "skip - error"
+      elif not pub["published"]:
+          pub["mtmt_cat"] = "skip - nem published"
+      elif "category" not in pub or pub["category"]["label"] != "Tudományos":
+          pub["mtmt_cat"] = "skip - nem tudományos"        
+      elif pub["otype"] == "JournalArticle" and "journal" in pub:
+          if pub["fullPublication"] and "reviewType" in pub["journal"] and pub["journal"]["reviewType"] == "REVIEWED" and "subType" in pub and (pub["subType"]["name"] == "Szakcikk" or pub["subType"]["name"] == "Összefoglaló cikk" or pub["subType"]["name"] == "Konferenciaközlemény" or pub["subType"]["name"] == "Rövid közlemény" or pub["subType"]["name"] == "Sokszerzős vagy csoportos szerzőségű szakcikk"):
+              pub["mtmt_cat"] = "journal"
+          else:
+              pub["mtmt_cat"] = "skip - nem lektorált folyóirat vagy nem értékelhető típus"
+      elif pub["fullPublication"] and ((pub["type"]["label"] == "Könyvrészlet" and "subType" in pub and pub["subType"]["label"] == "Konferenciaközlemény (Könyvrészlet)") or pub["type"]["label"] == "Egyéb konferenciaközlemény"):
+          pub["mtmt_cat"] = "conference"
+          if "book" in pub and "title" in pub["book"]:
+              pub["mtmt_title"] = pub["book"]["title"]
+      elif pub["type"]["label"] == "Könyv" or (pub["type"]["label"] == "Könyvrészlet" and "subType" in pub and (pub["subType"]["label"] == "Könyvfejezet (Könyvrészlet)" or pub["subType"]["label"] == "Szaktanulmány (Könyvrészlet)")):
+          pub["mtmt_cat"] = "book"
+          if "book" in pub and "title" in pub["book"]:
+              pub["mtmt_title"] = pub["title"]
+      elif pub["type"]["label"] == "Oltalmi formák":
+          pub["mtmt_cat"] = "patent"
+      elif not pub["fullPublication"]:
+          pub["mtmt_cat"] = "skip - nem full publication"        
+      elif pub["type"]["label"] == "Egyéb" or pub["type"]["label"] == "Disszertáció":
+          pub["mtmt_cat"] = "skip - other"
+      else:
+        pub["mtmt_cat"] = "skip - uncategorized"
+      plength = 0
+      if 'pageLength' in pub:
+          plength = pub["pageLength"]
+      elif 'firstPage' in pub and 'lastPage' in pub and pub["lastPage"].isnumeric() and pub["firstPage"].isnumeric():
+          plength = int(pub["lastPage"]) - int(pub["firstPage"]) + 1
+      pub["mtmt_q"] = 0    
+      pub["mtmt_norm_q"] = 0    
+      pub["mtmt_if"] = 0    
+      pub["mtmt_norm_if"] = 0    
+      nrm = 1.0
+      if pub["mtmt_cat"] == "journal":
+          ifct, nrm = getif(pub)        
+          pub["mtmt_if"] = ifct
+          pub["mtmt_norm_if"] = ifct / nrm
+          if ifct > 0:
+            pub["mtmt_q"] = max(0.6, ifct)
+            pub["mtmt_norm_q"] = max(0.6, pub["mtmt_norm_if"])
+          else:
+            if pub["foreignEdition"]:
+                pub["mtmt_q"] = 0.4
+            else:
+                pub["mtmt_q"] = 0.3
+            pub["mtmt_norm_q"] = pub["mtmt_q"]
+      elif pub["mtmt_cat"] == "conference" and plength >= 4:
+        if pub["foreignLanguage"]:
+            pub["mtmt_q"] = 0.2
+        else:
+            pub["mtmt_q"] = 0.1
+        pub["mtmt_norm_q"] = pub["mtmt_q"]
+      elif pub["mtmt_cat"] == "book" and plength >= 10:
+        if plength >= 100:
+            if pub["foreignLanguage"]:
+                pub["mtmt_q"] = 2
+            else:
+                pub["mtmt_q"] = 1
+        else:
+            if pub["foreignLanguage"]:
+                pub["mtmt_q"] = 0.2 * np.floor(plength/10)
+            else:
+                pub["mtmt_q"] = 0.1 * np.floor(plength/10)            
+        pub["mtmt_norm_q"] = pub["mtmt_q"]
+      pub["mtmt_i"] = pub["independentCitationCount"] # teljes eddigi I pontszám
+      pub["mtmt_i_year"] = {}
+    
+      if "pubStats" in pub and "years" in pub["pubStats"]:
+        for yr in pub["pubStats"]["years"]:
+            pub["mtmt_i_year"][yr["year"]] = yr["independentCitationCount"]
+      tszpart = {'ALGEBRA':0, 'ANALYSIS':0, 'Differential_Equations':0, 'Stochastics':0, 'Geometry':0} 
+      authors = 0
+      if "authorships" in pub:
+        for auth in pub["authorships"]:
+            if auth["authorTyped"]: # csak szerzőket veszünk figyelembe, szerkesztőket nem!
+                authors += 1
+                for tsz in tszmap:
+                    if tsz in auth["label"]:
+                        tszpart[tszmap[tsz]] += 1
+                        break
+      pub["mtmt_authors"] = authors  # a cikk szerzőinek száma
+      if authors > 0:
+        for v in tszpart:
+            tszpart[v] /= authors
+      pub["mtmt_tsz"] = tszpart # a cikkben részt vevő tanszékek aránya
+      pub["mtmt_rating"] = getrating(pub)
+  
+    pubyearly = pd.DataFrame({"Q pontszám": 0.0, 
+              "Normalizált Q": 0.0, 
+              "I pontszám": 0, 
+              "IF": 0.0, 
+              "Normalizált IF": 0.0, 
+              "Publikációk száma": 0, 
+              "Lektorált folyóiratok száma": 0, 
+              "Konferenciacikkek száma": 0, 
+              "Könyv és könyvfejezet": 0, 
+              "Szabadalom": 0, 
+              "IF folyóiratok száma": 0, 
+              "D1": 0, "Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0
+             }, index=map(list, zip(*itertools.product(tanszekek, range(2003, 2023)))))
+    dct = pubyearly.to_dict() # csúnya hack, e nélkül a dataframe nagyon lassú lenne
+    for pub in content:
+      for year in range(2003, 2023):
+        for tsz in tanszekek:
+            if year == pub["publishedYear"] and pub["publishedYear"] >= 2003 and pub["publishedYear"] <= 2023 and ("publicationPending" not in pub or not pub["publicationPending"]):
+                if pub["mtmt_tsz"][tsz] > 0:
+                    dct["Q pontszám"][(tsz,year)] += pub["mtmt_q"] * pub["mtmt_tsz"][tsz]
+                    dct["Normalizált Q"][(tsz,year)] += pub["mtmt_norm_q"] * pub["mtmt_tsz"][tsz]
+                    if pub["mtmt_if"] > 0:
+                        dct["IF"][(tsz,year)] += pub["mtmt_if"] * pub["mtmt_tsz"][tsz]         
+                        dct["Normalizált IF"][(tsz,year)] += pub["mtmt_norm_if"] * pub["mtmt_tsz"][tsz]         
+                    if pub["mtmt_cat"] == "journal":
+                        dct["Lektorált folyóiratok száma"][(tsz,year)] += 1                
+                        if pub["mtmt_if"] > 0:
+                            dct["IF folyóiratok száma"][(tsz,year)] += 1
+                        rating = getrating(pub)
+                        if rating in ("D1", "Q1", "Q2", "Q3", "Q4"):
+                            dct[rating][(tsz,year)] += 1
+                    if pub["mtmt_cat"] == "conference":
+                        dct["Konferenciacikkek száma"][(tsz,year)] += 1
+                    if pub["mtmt_cat"] == "book":
+                        dct["Könyv és könyvfejezet"][(tsz,year)] += 1
+                    if pub["mtmt_cat"] == "patent":
+                        dct["Szabadalom"][(tsz,year)] += 1
+                    dct["Publikációk száma"][(tsz,year)] += 1            
+            if pub["mtmt_tsz"][tsz] > 0 and year in pub["mtmt_i_year"]:
+                dct["I pontszám"][(tsz,year)] += pub["mtmt_i_year"][year]               
+    pubyearly = pubyearly.from_dict(dct)
+    pubyearly.index.set_names(["Tanszék", "Év"], inplace=True)
+    pubfaculty = pd.DataFrame({"Q pontszám": 0.0, 
+              "Normalizált Q": 0.0, 
+              "I pontszám": 0, 
+              "IF": 0.0, 
+              "Normalizált IF": 0.0, 
+              "Publikációk száma": 0, 
+              "Lektorált folyóiratok száma": 0, 
+              "Konferenciacikkek száma": 0, 
+              "Könyv és könyvfejezet": 0, 
+              "Szabadalom": 0, 
+              "IF folyóiratok száma": 0, 
+              "D1": 0, "Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0
+             }, index=list(range(2003,2023)))
+    dct = pubfaculty.to_dict() # csúnya hack, e nélkül a dataframe nagyon lassú lenne
+    for pub in content:
+      for year in range(2003, 2023):
+        if year == pub["publishedYear"] and pub["publishedYear"] >= 2003 and pub["publishedYear"] <= 2023:
+            dct["Q pontszám"][year] += pub["mtmt_q"]
+            dct["Normalizált Q"][year] += pub["mtmt_norm_q"]
+            if pub["mtmt_if"] > 0:
+                dct["IF"][year] += pub["mtmt_if"]
+                dct["Normalizált IF"][year] += pub["mtmt_norm_if"]
+            if pub["mtmt_cat"] == "journal":
+                dct["Lektorált folyóiratok száma"][year] += 1                
+                if pub["mtmt_if"] > 0:
+                    dct["IF folyóiratok száma"][year] += 1
+                rating = getrating(pub)
+                if rating in ("D1", "Q1", "Q2", "Q3", "Q4"):
+                    dct[rating][year] += 1
+            if pub["mtmt_cat"] == "conference":
+                dct["Konferenciacikkek száma"][year] += 1
+            if pub["mtmt_cat"] == "book":
+                dct["Könyv és könyvfejezet"][year] += 1
+            if pub["mtmt_cat"] == "patent":
+                dct["Szabadalom"][year] += 1
+            dct["Publikációk száma"][year] += 1            
+        if year in pub["mtmt_i_year"]:
+            dct["I pontszám"][year] += pub["mtmt_i_year"][year]               
+    pubfaculty = pubfaculty.from_dict(dct)
+    pubfaculty.index.set_names("Év", inplace=True)
+    return (pubfaculty) 
+def update_page_1():
+    loadfolder1()
+    pubfaculty=update()
+    pubfaculty.to_csv("mtmt-faculty-yearly_authors.csv")
+    shutil.rmtree("./tempo")    
+    loadfolder2()
+    pubfaculty=update()
+    pubfaculty.to_csv("mtmt-faculty-yearly.csv")
+    shutil.rmtree("./tempo") 
 def page1():  
   selected2 = option_menu(
     menu_title=None,
@@ -89,8 +374,12 @@ def page1():
   ])
   fig.update_layout(barmode='group')
   col4.plotly_chart(fig, use_container_width=True)
-  
-  
+  st.write('this button allows to update the website data. Please keep in mind it may take some time. ')
+  st.write('The update is finished when the button change it state .The progress bar only serve to give a general idea. ')
+  butt=st.button('update')
+  if butt:
+    update_page_1()
+    butt=False
 def page3():
   selected2 = option_menu(
     menu_title=None,
@@ -306,7 +595,7 @@ def page5():
   e=pubs[pubs['Tanszék'] == "Stochastics"]
   col1.write("\n")
   col1.write("Please enter the interval for which you are interested in the publication performance.")
-  slider_range=col1.slider("year interval",2003, 2022,value=[2005,2020])
+  slider_range=col1.slider("year interval",2003, 2022,value=[2005,2022])
   maxYear = slider_range[1]
   minYear = slider_range[0]
   df = pubs
@@ -320,7 +609,7 @@ def page5():
   col1.plotly_chart(fig, use_container_width=True)
   col2.write("\n")
   col2.write("Please enter the interval for which you are interested in the publication performance.")
-  slider_range2=col2.slider("year interval",2003, 2022,value=[2005,2020] ,key = "ab")
+  slider_range2=col2.slider("year interval",2003, 2022,value=[2005,2022] ,key = "ab")
   maxYear2 = slider_range2[1]
   minYear2 = slider_range2[0]
   df = pubs
